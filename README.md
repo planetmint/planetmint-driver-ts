@@ -4,8 +4,6 @@ SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
 Code is Apache-2.0 and docs are CC-BY-4.0
 --->
 
-# [![js-bigchaindb-driver](media/repo-banner@2x.png)](https://www.bigchaindb.com)
-
 > Official JavaScript driver for [BigchainDB](https://github.com/bigchaindb/bigchaindb) to create transactions in Node.js and the browser.
 
 [![Join the chat at https://gitter.im/bigchaindb/js-bigchaindb-driver](https://badges.gitter.im/bigchaindb/js-bigchaindb-driver.svg)](https://gitter.im/bigchaindb/js-bigchaindb-driver?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
