@@ -159,12 +159,12 @@ test('Get list of transactions for an asset id', t => {
     conn._req = sinon.spy()
     Connection.getApiUrls = sinon.stub().returns(expectedPath)
 
-    conn.listTransactions(assetId, operation)
+    conn.listTransactions([assetId], operation)
     t.truthy(conn._req.calledWith(
         expectedPath,
         {
             query: {
-                asset_id: assetId,
+                asset_ids: [assetId],
                 operation
             }
         }
@@ -215,21 +215,36 @@ test('Get outputs for a public key and spent=true', t => {
     ))
 })
 
-test('Get asset for text', t => {
+test('Get asset for text with default limit', t => {
     const expectedPath = 'path'
-    const search = 'abc'
+    const cid = 'abc'
 
     conn._req = sinon.spy()
     Connection.getApiUrls = sinon.stub().returns(expectedPath)
 
-    conn.searchAssets(search)
+    conn.searchAssets(cid)
     t.truthy(conn._req.calledWith(
         expectedPath,
-        { query: { search, limit: 10 } }
+        { query: { cid, limit: 10 } }
     ))
 })
 
-test('Get metadata for text', t => {
+test('Get asset for text with custom limit', t => {
+    const expectedPath = 'path'
+    const cid = 'abc'
+    const limit = 5
+
+    conn._req = sinon.spy()
+    Connection.getApiUrls = sinon.stub().returns(expectedPath)
+
+    conn.searchAssets(cid, limit)
+    t.truthy(conn._req.calledWith(
+        expectedPath,
+        { query: { cid, limit: limit } }
+    ))
+})
+
+test('Get metadata for text with default limit', t => {
     const expectedPath = 'path'
     const search = 'abc'
 
@@ -240,5 +255,20 @@ test('Get metadata for text', t => {
     t.truthy(conn._req.calledWith(
         expectedPath,
         { query: { search, limit: 10 } }
+    ))
+})
+
+test('Get metadata for text with custom limit', t => {
+    const expectedPath = 'path'
+    const search = 'abc'
+    const limit = 5
+
+    conn._req = sinon.spy()
+    Connection.getApiUrls = sinon.stub().returns(expectedPath)
+
+    conn.searchMetadata(search, limit)
+    t.truthy(conn._req.calledWith(
+        expectedPath,
+        { query: { search, limit } }
     ))
 })

@@ -8,17 +8,22 @@ import { Ed25519Sha256 } from 'crypto-conditions'
 import { Transaction, Ed25519Keypair } from '../src'
 // TODO: Find out if ava has something like conftest, if so put this there.
 
+export const API_PATH = 'http://localhost:9984/api/v1/'
+
+export function asset() { return ['CID'] }
+export const metaData = 'CID'
+
+// transaction schema v2
 // NOTE: It's safer to cast `Math.random()` to a string, to avoid differences
 // in "float interpretation" between languages (e.g. JavaScript and Python)
-export const API_PATH = 'http://localhost:9984/api/v1/'
-export function asset() { return { message: `${Math.random()}` } }
-export const metaData = { message: 'metaDataMessage' }
+export function assetV2() { return { message: `${Math.random()}` } }
+export const metaDataV2 = { message: 'metaDataMessage' }
 
 export const alice = new Ed25519Keypair()
 export const aliceCondition = Transaction.makeEd25519Condition(alice.publicKey)
 export const aliceOutput = Transaction.makeOutput(aliceCondition)
 export const createTx = Transaction.makeCreateTransaction(
-    asset,
+    asset(),
     metaData,
     [aliceOutput],
     alice.publicKey
@@ -27,6 +32,18 @@ export const transferTx = Transaction.makeTransferTransaction(
     [{ tx: createTx, output_index: 0 }],
     [aliceOutput],
     metaData
+)
+
+export const createTxV2 = Transaction.makeCreateTransactionV2(
+    assetV2(),
+    metaDataV2,
+    [aliceOutput],
+    alice.publicKey
+)
+export const transferTxV2 = Transaction.makeTransferTransactionV2(
+    [{ tx: createTxV2, output_index: 0 }],
+    [aliceOutput],
+    metaDataV2
 )
 
 export const bob = new Ed25519Keypair()
@@ -45,7 +62,8 @@ export function delegatedSignTransaction(...keyPairs) {
 
         const ed25519Fulfillment = new Ed25519Sha256()
         filteredKeyPairs.forEach(keyPair => {
-            const privateKey = Buffer.from(base58.decode(keyPair.privateKey))
+            // const privateKey = Buffer.from(base58.decode(keyPair.privateKey))
+            const privateKey = (base58.decode(keyPair.privateKey))
             ed25519Fulfillment.sign(transactionHash, privateKey)
         })
         return ed25519Fulfillment.serializeUri()

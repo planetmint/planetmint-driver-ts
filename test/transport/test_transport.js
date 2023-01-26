@@ -15,7 +15,7 @@ test('Pick connection with earliest backoff time', async t => {
     // Reverse order
     const conn = new Connection([path2, path1])
     // This will trigger the 'forwardRequest' so the correct connection will be taken
-    await conn.searchAssets('example')
+    await conn.listTransactions(['example']).catch(() => {})
 
     const connection1 = conn.transport.connectionPool[1]
 

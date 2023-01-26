@@ -68,8 +68,8 @@ test('Threshold condition encoding', t => {
 test('Fulfillment correctly formed', t => {
     const alice = new Ed25519Keypair()
     const txCreate = Transaction.makeCreateTransaction(
-        {},
-        {},
+        [],
+        null,
         [Transaction.makeOutput(Transaction.makeEd25519Condition(alice.publicKey))],
         alice.publicKey
     )
@@ -79,7 +79,7 @@ test('Fulfillment correctly formed', t => {
     const txTransfer = Transaction.makeTransferTransaction(
         [{ tx: signCreateTransaction, output_index: 0 }],
         [Transaction.makeOutput(Transaction.makeEd25519Condition(alice.publicKey))],
-        {}
+        null
     )
     const txSigned = Transaction.signTransaction(txTransfer, alice.privateKey)
 
@@ -102,8 +102,8 @@ test('Delegated signature is correct', t => {
     const alice = new Ed25519Keypair()
 
     const txCreate = Transaction.makeCreateTransaction(
-        {},
-        {},
+        [],
+        null,
         [Transaction.makeOutput(Transaction.makeEd25519Condition(alice.publicKey))],
         alice.publicKey
     )
@@ -120,8 +120,8 @@ test('Delegated async signature is correct', async t => {
     const alice = new Ed25519Keypair()
 
     const txCreate = Transaction.makeCreateTransaction(
-        {},
-        {},
+        [],
+        null,
         [Transaction.makeOutput(Transaction.makeEd25519Condition(alice.publicKey))],
         alice.publicKey
     )

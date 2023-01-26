@@ -76,13 +76,14 @@ test('Create TRANSFER transaction based on CREATE transaction', t => {
     )
     const expected = [
         'TRANSFER',
-        { id: createTx.id },
+        [{ id: createTx.id }],
         metaData,
         [aliceOutput],
         [Transaction.makeInputTemplate(
             [alice.publicKey],
             { output_index: 0, transaction_id: createTx.id }
-        )]
+        )],
+        '3.0'
     ]
     // NOTE: `src/transaction/makeTransaction` is `export default`, hence we
     // can only mock `makeTransaction.default` with a hack:
@@ -93,7 +94,6 @@ test('Create TRANSFER transaction based on CREATE transaction', t => {
 
 test('Create TRANSFER transaction based on TRANSFER transaction', t => {
     sinon.spy(Transaction, 'makeTransaction')
-
     Transaction.makeTransferTransaction(
         [{ tx: transferTx, output_index: 0 }],
         [aliceOutput],
@@ -101,13 +101,14 @@ test('Create TRANSFER transaction based on TRANSFER transaction', t => {
     )
     const expected = [
         'TRANSFER',
-        { id: transferTx.asset.id },
+        [{ id: transferTx.assets[0].id }],
         metaData,
         [aliceOutput],
         [Transaction.makeInputTemplate(
             [alice.publicKey],
             { output_index: 0, transaction_id: transferTx.id }
-        )]
+        )],
+        '3.0'
     ]
 
     t.truthy(Transaction.makeTransaction.calledWith(...expected))
