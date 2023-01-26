@@ -10,6 +10,8 @@ import type {
   TransactionOperations,
   TransferTransaction,
   TransactionCommon,
+  CID,
+  TransactionVersion,
 } from './transaction';
 
 declare const DEFAULT_NODE = 'http://localhost:9984/api/v1/';
@@ -21,13 +23,22 @@ export interface InputNode {
 
 export type AssetResult = {
   id: string;
-  data: Record<string, any>;
+  data: Record<string, any> | CID;
 };
 
 export type MetadataResult = {
   id: string;
-  metadata: Record<string, any>;
+  metadata: Record<string, any> | CID;
 };
+
+export type TransactionResult<
+  O extends TransactionOperations,
+  V extends TransactionVersion = TransactionVersion.V3,
+  D = CID,
+  M = CID
+> = O extends TransactionOperations.CREATE
+  ? CreateTransaction<V, D, M>
+  : TransferTransaction<V, M>;
 
 export enum Endpoints {
   blocks = 'blocks',
@@ -57,8 +68,9 @@ export interface EndpointsUrl {
 
 export interface EndpointsResponse<
   O = TransactionOperations.CREATE,
-  A = Record<string, any>,
-  M = Record<string, any>
+  V = TransactionVersion.V3,
+  D = CID,
+  M = CID
 > {
   [Endpoints.blocks]: number[];
   [Endpoints.blocksDetail]: {
@@ -70,22 +82,14 @@ export interface EndpointsResponse<
     output_index: number;
   }[];
   [Endpoints.transactions]: O extends TransactionOperations.CREATE
-    ? CreateTransaction[]
+    ? CreateTransaction<V, D, M>[]
     : O extends TransactionOperations.TRANSFER
-    ? TransferTransaction[]
-    : (CreateTransaction | TransferTransaction)[];
-  [Endpoints.transactionsSync]: O extends TransactionOperations.CREATE
-    ? CreateTransaction<A, M>
-    : TransferTransaction<M>;
-  [Endpoints.transactionsAsync]: O extends TransactionOperations.CREATE
-    ? CreateTransaction<A, M>
-    : TransferTransaction<M>;
-  [Endpoints.transactionsCommit]: O extends TransactionOperations.CREATE
-    ? CreateTransaction<A, M>
-    : TransferTransaction<M>;
-  [Endpoints.transactionsDetail]: O extends TransactionOperations.CREATE
-    ? CreateTransaction<A, M>
-    : TransferTransaction<M>;
+    ? TransferTransaction<V, M>[]
+    : (CreateTransaction<V, D, M> | TransferTransaction<V, M>)[];
+  [Endpoints.transactionsSync]: TransactionResult<O, V, D, M>;
+  [Endpoints.transactionsAsync]: TransactionResult<O, V, D, M>;
+  [Endpoints.transactionsCommit]: TransactionResult<O, V, D, M>;
+  [Endpoints.transactionsDetail]: TransactionResult<O, V, D, M>;
   [Endpoints.assets]: AssetResult[];
   [Endpoints.metadata]: MetadataResult[];
 }
@@ -117,7 +121,7 @@ export default class Connection {
     blockHeight: number | string
   ): Promise<EndpointsResponse[Endpoints.blocksDetail]>;
 
-  getTransaction<O = TransactionOperations.CREATE>(
+  getTransaction<O extends TransactionOperations>(
     transactionId: string
   ): Promise<EndpointsResponse<O>[Endpoints.transactionsDetail]>;
 
@@ -130,45 +134,52 @@ export default class Connection {
     spent?: boolean
   ): Promise<EndpointsResponse[Endpoints.outputs]>;
 
-  listTransactions(
-    assetId: string,
-    operation?: TransactionOperations
-  ): Promise<EndpointsResponse<typeof operation>[Endpoints.transactions]>;
+  listTransactions<
+    O extends TransactionOperations,
+    V extends TransactionVersion
+  >(
+    assetIds: string[],
+    operation?: O
+  ): Promise<EndpointsResponse<O, V>[Endpoints.transactions]>;
 
   postTransaction<
-    O extends TransactionOperations = TransactionOperations.CREATE,
-    A = Record<string, any>,
-    M = Record<string, any>
+    O extends TransactionOperations,
+    V extends TransactionVersion,
+    D = CID,
+    M = CID
   >(
-    transaction: TransactionCommon<O>
-  ): Promise<EndpointsResponse<O, A, M>[Endpoints.transactionsCommit]>;
+    transaction: TransactionCommon<O, V, D, M>
+  ): Promise<EndpointsResponse<O, V, D, M>[Endpoints.transactionsCommit]>;
 
   postTransactionSync<
-    O extends TransactionOperations = TransactionOperations.CREATE,
-    A = Record<string, any>,
-    M = Record<string, any>
+    O extends TransactionOperations,
+    V extends TransactionVersion,
+    D = CID,
+    M = CID
   >(
-    transaction: TransactionCommon<O>
-  ): Promise<EndpointsResponse<O, A, M>[Endpoints.transactionsSync]>;
+    transaction: TransactionCommon<O, V, D, M>
+  ): Promise<EndpointsResponse<O, V, D, M>[Endpoints.transactionsSync]>;
 
   postTransactionAsync<
-    O extends TransactionOperations = TransactionOperations.CREATE,
-    A = Record<string, any>,
-    M = Record<string, any>
+    O extends TransactionOperations,
+    V extends TransactionVersion,
+    D = CID,
+    M = CID
   >(
-    transaction: TransactionCommon<O>
-  ): Promise<EndpointsResponse<O, A, M>[Endpoints.transactionsAsync]>;
+    transaction: TransactionCommon<O, V, D, M>
+  ): Promise<EndpointsResponse<O, V, D, M>[Endpoints.transactionsAsync]>;
 
   postTransactionCommit<
-    O extends TransactionOperations = TransactionOperations.CREATE,
-    A = Record<string, any>,
-    M = Record<string, any>
+    O extends TransactionOperations,
+    V extends TransactionVersion,
+    D = CID,
+    M = CID
   >(
-    transaction: TransactionCommon<O>
-  ): Promise<EndpointsResponse<O, A, M>[Endpoints.transactionsCommit]>;
+    transaction: TransactionCommon<O, V, D, M>
+  ): Promise<EndpointsResponse<O, V, D, M>[Endpoints.transactionsCommit]>;
 
   searchAssets(
-    search: string,
+    cid: CID,
     limit?: number
   ): Promise<EndpointsResponse[Endpoints.assets]>;
 

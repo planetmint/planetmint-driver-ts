@@ -18,6 +18,7 @@ export interface TransactionInput {
   } | null;
   owners_before: string[];
 }
+
 export interface TransactionOutput {
   amount: string;
   condition:
@@ -32,53 +33,85 @@ export enum TransactionOperations {
   TRANSFER = 'TRANSFER',
 }
 
-export interface TransactionCommon<
-  O extends TransactionOperations = TransactionOperations.CREATE,
-  A extends Record<string, any> = Record<string, unknown>,
-  M extends Record<string, any> = Record<string, unknown>
-> {
-  id?: string;
-  inputs: TransactionInput[];
-  outputs: TransactionOutput[];
-  version: string;
-  metadata: M;
-  operation: O;
-  asset: TransactionAssetMap<O, A>;
+export enum TransactionVersion {
+  V2 = '2.0',
+  V3 = '3.0',
 }
 
-export interface TransactionCommonSigned<
-  O extends TransactionOperations = TransactionOperations.CREATE,
-  A extends Record<string, any> = Record<string, unknown>,
+export type CID = string;
+
+export type Metadata<
+  V extends TransactionVersion = TransactionVersion.V3,
   M extends Record<string, any> = Record<string, unknown>
-> extends Omit<TransactionCommon<O, A, M>, 'id'> {
-  id: string;
-}
+> = V extends TransactionVersion.V3 ? CID : M;
+
+export type AssetData<
+  V extends TransactionVersion = TransactionVersion.V3,
+  D extends Record<string, any> | CID
+> = V extends TransactionVersion.V3 ? CID : D;
 
 export type TransactionAssetMap<
-  Operation,
-  A extends Record<string, any>
-> = Operation extends TransactionOperations.CREATE
+  O extends TransactionOperations,
+  V extends TransactionVersion = TransactionVersion.V3,
+  D extends Record<string, any> | CID = CID
+> = O extends TransactionOperations.CREATE
   ? {
-      data: A;
+      data: AssetData<V, D>;
     }
   : {
       id: string;
     };
 
-export interface CreateTransaction<
-  A extends Record<string, any> = Record<string, unknown>,
-  M extends Record<string, any> = Record<string, unknown>
-> extends TransactionCommon<TransactionOperations.CREATE, A, M> {
+export interface TransactionCommon<
+  O extends TransactionOperations,
+  V extends TransactionVersion = TransactionVersion.V3,
+  D extends Record<string, any> | CID = CID,
+  M extends Record<string, any> | CID = CID
+> {
+  id?: string;
+  inputs: TransactionInput[];
+  outputs: TransactionOutput[];
+  version: V;
+  metadata: Metadata<M, V>;
+  operation: O;
+  asset: TransactionVersion extends TransactionVersion.V2
+    ? TransactionAssetMap<O, V, D>
+    : never;
+  assets: TransactionVersion extends TransactionVersion.V3
+    ? TransactionAssetMap<O, V, D>
+    : never;
+}
+
+export interface TransactionCommonSigned<
+  O extends TransactionOperations,
+  V extends TransactionVersion = TransactionVersion.V3,
+  D extends Record<string, any> | CID = CID,
+  M extends Record<string, any> | CID = CID
+> extends Omit<TransactionCommon<O, V, D, M>, 'id'> {
   id: string;
-  asset: TransactionAssetMap<TransactionOperations.CREATE, A>;
+}
+
+export interface CreateTransaction<
+  V extends TransactionVersion = TransactionVersion.V3,
+  D extends Record<string, any> | CID = CID,
+  M extends Record<string, any> | CID = CID
+> extends TransactionCommon<TransactionOperations.CREATE, V, D, M> {
+  id: string;
+  asset: TransactionAssetMap<TransactionOperations.CREATE, V, A>;
   operation: TransactionOperations.CREATE;
 }
 
 export interface TransferTransaction<
-  M extends Record<string, any> = Record<string, unknown>
-> extends TransactionCommon<TransactionOperations.TRANSFER, any, M> {
+  V extends TransactionVersion = TransactionVersion.V3,
+  M extends Record<string, any> | CID = CID
+> extends TransactionCommon<
+    TransactionOperations.TRANSFER,
+    V,
+    { id: string },
+    M
+  > {
   id: string;
-  asset: TransactionAssetMap<TransactionOperations.TRANSFER, { id: string }>;
+  asset: TransactionAssetMap<TransactionOperations.TRANSFER, V, { id: string }>;
   operation: TransactionOperations.TRANSFER;
 }
 
@@ -87,14 +120,14 @@ export interface TransactionUnspentOutput {
   output_index: number;
 }
 
-interface TxTemplate {
+interface TxTemplate<V extends TransactionVersion = TransactionVersion.V3> {
   id: null;
   operation: null;
   outputs: [];
   inputs: [];
   metadata: null;
   asset: null;
-  version: '2.0';
+  version: V;
 }
 
 export type DelegateSignFunction = (
@@ -111,7 +144,7 @@ export type DelegateSignFunctionAsync = (
 
 export default class Transaction {
   static serializeTransactionIntoCanonicalString<
-    O extends TransactionOperations = TransactionOperations
+    O extends TransactionOperations
   >(transaction: TransactionCommon<O>): string;
 
   static serializeTransactionIntoCanonicalString(
@@ -183,54 +216,92 @@ export default class Transaction {
     amount?: string
   ): TransactionOutput;
 
-  static makeTransactionTemplate(): TxTemplate;
+  static makeTransactionTemplate<
+    V extends TransactionVersion = TransactionVersion.V3
+  >(version?: V): TxTemplate<V>;
 
   static makeTransaction<
     O extends TransactionOperations,
-    A = Record<string, any>,
+    V extends TransactionVersion = TransactionVersion.V3,
+    D = Record<string, any>,
     M = Record<string, any>
   >(
     operation: O,
-    asset: A,
-    metadata: M,
+    assets: V extends TransactionVersion.V3
+      ? TransactionAssetMap<O, V, D>[]
+      : TransactionAssetMap<O, V, D>,
+    metadata: Metadata<V, M>,
     outputs: TransactionOutput[],
-    inputs: TransactionInput[]
-  ): TransactionCommon<O, A, M>;
+    inputs: TransactionInput[],
+    version: V
+  ): TransactionCommon<O, V, D, M>;
 
-  static makeCreateTransaction<
-    A = Record<string, any>,
+  static makeCreateTransaction(
+    assetData: CID[],
+    metadata: CID,
+    outputs: TransactionOutput[],
+    ...issuers: string[]
+  ): CreateTransaction<TransactionVersion.V3, CID[], CID>;
+
+  static makeCreateTransactionV2<
+    D = Record<string, any>,
     M = Record<string, any>
   >(
-    asset: A,
+    assetData: D,
     metadata: M,
     outputs: TransactionOutput[],
     ...issuers: string[]
-  ): CreateTransaction<A, M>;
+  ): CreateTransaction<TransactionVersion.V2, D, M>;
 
-  static makeTransferTransaction<M = Record<string, any>>(
+  private static makeBaseTransferTransaction(
+    unspentOutputs: TransactionUnspentOutput[]
+  ): {
+    asset?: TransactionAssetMap<
+      TransactionOperations.TRANSFER,
+      TransactionVersion.V2,
+      any
+    >;
+    assets?: TransactionAssetMap<
+      TransactionOperations.TRANSFER,
+      TransactionVersion.V3,
+      any
+    >[];
+    inputs: TransactionInput[];
+  };
+
+  static makeTransferTransaction(
+    unspentOutputs: TransactionUnspentOutput[],
+    outputs: TransactionOutput[],
+    metadata: CID
+  ): TransferTransaction<TransactionVersion.V3, CID>;
+
+  static makeTransferTransactionV2<M = Record<string, any>>(
     unspentOutputs: TransactionUnspentOutput[],
     outputs: TransactionOutput[],
     metadata: M
-  ): TransferTransaction<M>;
+  ): TransferTransaction<TransactionVersion.V2, M>;
 
   static signTransaction<
-    O extends TransactionOperations = TransactionOperations.CREATE
+    O extends TransactionOperations = TransactionOperations.CREATE,
+    V extends TransactionVersion = TransactionVersion.V3
   >(
-    transaction: TransactionCommon<O>,
+    transaction: TransactionCommon<O, V>,
     ...privateKeys: string[]
-  ): TransactionCommonSigned<O>;
+  ): TransactionCommonSigned<O, V>;
 
   static delegateSignTransaction<
-    O extends TransactionOperations = TransactionOperations.CREATE
+    O extends TransactionOperations = TransactionOperations.CREATE,
+    V extends TransactionVersion = TransactionVersion.V3
   >(
-    transaction: TransactionCommon<O>,
+    transaction: TransactionCommon<O, V>,
     signFn: DelegateSignFunction
-  ): TransactionCommonSigned<O>;
+  ): TransactionCommonSigned<O, V>;
 
   static delegateSignTransactionAsync<
-    O extends TransactionOperations = TransactionOperations.CREATE
+    O extends TransactionOperations = TransactionOperations.CREATE,
+    V extends TransactionVersion = TransactionVersion.V3
   >(
-    transaction: TransactionCommon<O>,
+    transaction: TransactionCommon<O, V>,
     signFn: DelegateSignFunctionAsync
-  ): Promise<TransactionCommonSigned<O>>;
+  ): Promise<TransactionCommonSigned<O, V>>;
 }
