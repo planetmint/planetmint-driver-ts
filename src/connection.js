@@ -126,13 +126,13 @@ export default class Connection {
     }
 
     /**
-     * @param assetId
+     * @param assetIds
      * @param operation
      */
-    listTransactions(assetId, operation) {
+    listTransactions(assetIds, operation) {
         return this._req(Connection.getApiUrls('transactions'), {
             query: {
-                asset_id: assetId,
+                asset_ids: assetIds,
                 operation
             }
         })
@@ -176,26 +176,27 @@ export default class Connection {
     }
 
     /**
-     * @param search
+     * @param search by CID
      */
-    searchAssets(search, limit = 10) {
+    searchAssets(cid, limit = 10) {
         return this._req(Connection.getApiUrls('assets'), {
             query: {
-                search,
+                cid,
                 limit
             }
         })
     }
 
+    // metadata search is now disabled in planetmint
     /**
      * @param search
      */
-    searchMetadata(search, limit = 10) {
-        return this._req(Connection.getApiUrls('metadata'), {
-            query: {
-                search,
-                limit
-            }
-        })
-    }
+    // searchMetadata(search, limit = 10) {
+    //     return this._req(Connection.getApiUrls('metadata'), {
+    //         query: {
+    //             search,
+    //             limit
+    //         }
+    //     })
+    // }
 }
