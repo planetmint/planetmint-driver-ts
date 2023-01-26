@@ -1,12 +1,13 @@
-// Copyright BigchainDB GmbH and BigchainDB contributors
-// SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
-// Code is Apache-2.0 and docs are CC-BY-4.0
+// Copyright © 2020 Interplanetary Database Association e.V.,
+// Planetmint and IPDB software contributors.
+// SPDX-License-Identifier: (AGPL-3.0-or-later AND CC-BY-4.0)
+// Code is AGPL-3.0-or-later and docs are CC-BY-4.0
 
 /* eslint-disable import/no-unresolved */
 
 import bip39 from 'bip39'
 
-const driver = require('bigchaindb-driver')
+const driver = require('planetmint-driver')
 
 // ======== Create Keypair ======== //
 /**
@@ -16,7 +17,7 @@ const driver = require('bigchaindb-driver')
  * mnemnoicToSeed() transforms the passphrase you gave as an input
  * to a byteArray
  *
- * BigchainDB however only accepts an input length of 32 characters
+ * Planetmint however only accepts an input length of 32 characters
  * so we have to slice this to give it as input for driver.Ed25519Keypair()
  *
  * Is it safe to slice? Yes, a seed of length 32 is very safe according
@@ -29,7 +30,7 @@ const keypair = new driver.Ed25519Keypair(seed)
 
 console.log(`Public Key: ${keypair.publicKey} - Private Key: ${keypair.privateKey}`) // eslint-disable-line no-console
 
-// ======== Other Bip39 Functionality not related to BigchainDB ======== //
+// ======== Other Bip39 Functionality not related to Planetmint ======== //
 
 /* Create Random passphrase */
 const mnemonic = bip39.generateMnemonic()

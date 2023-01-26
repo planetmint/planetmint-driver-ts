@@ -1,6 +1,7 @@
-// Copyright BigchainDB GmbH and BigchainDB contributors
-// SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
-// Code is Apache-2.0 and docs are CC-BY-4.0
+// Copyright © 2020 Interplanetary Database Association e.V.,
+// Planetmint and IPDB software contributors.
+// SPDX-License-Identifier: (AGPL-3.0-or-later AND CC-BY-4.0)
+// Code is AGPL-3.0-or-later and docs are CC-BY-4.0
 
 import test from 'ava'
 import { Ed25519Keypair, Transaction, Connection } from '../../src'
@@ -384,7 +385,8 @@ test('Search for an asset', t => {
         ))
 })
 
-test('Search for metadata', t => {
+// Metadata search is disabled in Planetmint
+test.skip('Search for metadata', t => {
     const conn = new Connection(API_PATH)
 
     const createTx = Transaction.makeCreateTransaction(
@@ -442,7 +444,7 @@ test('Search transaction containing an asset', t => {
     )
 
     return conn.postTransactionCommit(createTxSigned)
-        .then(({ id }) => conn.listTransactions(id))
+        .then(({ id }) => conn.listTransactions([id]))
         .then(transactions => {
             t.truthy(transactions.length === 1)
         })

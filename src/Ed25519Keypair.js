@@ -1,13 +1,14 @@
-// Copyright BigchainDB GmbH and BigchainDB contributors
-// SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
-// Code is Apache-2.0 and docs are CC-BY-4.0
+// Copyright © 2020 Interplanetary Database Association e.V.,
+// Planetmint and IPDB software contributors.
+// SPDX-License-Identifier: (AGPL-3.0-or-later AND CC-BY-4.0)
+// Code is AGPL-3.0-or-later and docs are CC-BY-4.0
 
 import base58 from 'bs58'
 import { sign } from 'tweetnacl'
 
 /**
  * @public
- * Ed25519 keypair in base58 (as BigchainDB expects base58 keys)
+ * Ed25519 keypair in base58 (as Planetmint expects base58 keys)
  * @type {Object}
  * @param {Buffer} [seed] A seed that will be used as a key derivation function
  * @property {string} publicKey

@@ -1,21 +1,21 @@
 {
-  "name": "bigchaindb-driver",
-  "version": "4.3.0",
-  "description": "Node.js driver for BigchainDB",
-  "homepage": "https://www.bigchaindb.com/",
-  "bugs": "https://github.com/bigchaindb/js-bigchaindb-driver/issues",
+  "name": "planetmint-driver",
+  "version": "0.0.0",
+  "description": "Node.js driver for Planetmint",
+  "homepage": "https://planetmint.io/",
+  "bugs": "https://github.com/planetmint/planetmint-driver-ts/issues",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bigchaindb/js-bigchaindb-driver.git"
+    "url": "git+https://github.com/planetmint/planetmint-driver-ts.git"
   },
-  "license": "Apache-2.0",
-  "author": "BigchainDB",
+  "license": "AGPL-3.0-or-later",
+  "author": "Planetmint",
   "files": [
     "dist",
     "types"
   ],
   "main": "./dist/node/index.js",
-  "browser": "./dist/browser/bigchaindb-driver.cjs2.min.js",
+  "browser": "./dist/browser/planetmint-driver.cjs2.min.js",
   "types": "./types/index.d.ts",
   "sideEffects": false,
   "scripts": {
@@ -28,7 +28,6 @@
     "dev": "webpack -w",
     "clean": "rimraf dist/bundle dist/browser dist/node",
     "test": "npm run lint && nyc ava && npm run report-coverage",
-    "thanks": "cowsay Hi, thanks for your interest in BigchainDB. We appreciate your contribution!",
     "release": "read -p 'GITHUB_TOKEN: ' GITHUB_TOKEN && export GITHUB_TOKEN=$GITHUB_TOKEN && release-it --src.tagName='v%s'",
     "release-minor": "release-it minor --non-interactive",
     "release-major": "release-it major --non-interactive",
@@ -89,7 +88,7 @@
     "tweetnacl": "^1.0.3"
   },
   "keywords": [
-    "bigchaindb",
+    "planetmint",
     "driver",
     "blockchain",
     "decentralized",

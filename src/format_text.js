@@ -1,6 +1,7 @@
-// Copyright BigchainDB GmbH and BigchainDB contributors
-// SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
-// Code is Apache-2.0 and docs are CC-BY-4.0
+// Copyright © 2020 Interplanetary Database Association e.V.,
+// Planetmint and IPDB software contributors.
+// SPDX-License-Identifier: (AGPL-3.0-or-later AND CC-BY-4.0)
+// Code is AGPL-3.0-or-later and docs are CC-BY-4.0
 
 import { sprintf } from 'sprintf-js'
 
@@ -25,8 +26,8 @@ const Regex = {
  *   formatText('Hi there ${dimi}!', { dimi: 'Dimi' })
  *       => 'Hi there Dimi!'
  *
- *   formatText('${database} is %(status)s', { database: 'BigchainDB', status: 'big' })
- *       => 'BigchainDB is big'
+ *   formatText('${database} is %(status)s', { database: 'Planetmint', status: 'fresh' })
+ *       => 'Planetmint is fresh'
  *
  * Like sprintf-js, string interpolation for keywords and indexes is supported too:
  *   formatText('Berlin is best known for its ${berlin.topKnownFor[0].name}', {

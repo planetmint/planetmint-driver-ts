@@ -1,14 +1,15 @@
-// Copyright BigchainDB GmbH and BigchainDB contributors
-// SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
-// Code is Apache-2.0 and docs are CC-BY-4.0
+// Copyright © 2020 Interplanetary Database Association e.V.,
+// Planetmint and IPDB software contributors.
+// SPDX-License-Identifier: (AGPL-3.0-or-later AND CC-BY-4.0)
+// Code is AGPL-3.0-or-later and docs are CC-BY-4.0
 
 /* eslint-disable import/no-unresolved */
 
-const driver = require('bigchaindb-driver')
+const driver = require('planetmint-driver')
 require('dotenv').config()
 
 // ======== Preparation ======== //
-const conn = new driver.Connection('https://example.com/api/v1/', {
+const conn = new driver.Connection(process.env.PLANETMINT_API_PATH || 'https://example.com/api/v1/', {
     header1: 'header1_value',
     header2: 'header2_value'
 })

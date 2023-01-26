@@ -1,11 +1,12 @@
-// Copyright BigchainDB GmbH and BigchainDB contributors
-// SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
-// Code is Apache-2.0 and docs are CC-BY-4.0
+// Copyright © 2020 Interplanetary Database Association e.V.,
+// Planetmint and IPDB software contributors.
+// SPDX-License-Identifier: (AGPL-3.0-or-later AND CC-BY-4.0)
+// Code is AGPL-3.0-or-later and docs are CC-BY-4.0
 
 import base58 from 'bs58'
 
 /**
- * Serializes a crypto-condition class (Condition or Fulfillment) into a BigchainDB-compatible JSON
+ * Serializes a crypto-condition class (Condition or Fulfillment) into a Planetmint-compatible JSON
  * @param {cc.Fulfillment} fulfillment base58 encoded Ed25519 public key for recipient of the Transaction
  * @returns {Object} Ed25519 Condition (that will need to wrapped in an Output)
  */

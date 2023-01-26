@@ -1,7 +1,8 @@
 
-.. Copyright BigchainDB GmbH and BigchainDB contributors
-   SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
-   Code is Apache-2.0 and docs are CC-BY-4.0
+.. Copyright © 2020 Interplanetary Database Association e.V.,
+   Planetmint and IPDB software contributors.
+   SPDX-License-Identifier: (AGPL-3.0-or-later AND CC-BY-4.0)
+   Code is AGPL-3.0-or-later and docs are CC-BY-4.0
 
 .. highlight:: shell
 
@@ -20,7 +21,7 @@ Types of Contributions
 Report Bugs
 ~~~~~~~~~~~
 
-Report bugs at https://github.com/bigchaindb/js-bigchaindb-driver/issues.
+Report bugs at https://github.com/planetmint/planetmint-driver-ts/issues.
 
 If you are reporting a bug, please include:
 
@@ -43,14 +44,14 @@ and "help wanted" is open to whoever wants to implement it.
 Write Documentation
 ~~~~~~~~~~~~~~~~~~~
 
-bigchaindb-driver could always use more documentation, whether as part of the
-official bigchaindb-driver docs, in docstrings, or even on the web in blog posts,
+planetmint-driver could always use more documentation, whether as part of the
+official planetmint-driver docs, in docstrings, or even on the web in blog posts,
 articles, and such.
 
 Submit Feedback
 ~~~~~~~~~~~~~~~
 
-The best way to send feedback is to file an issue at https://github.com/bigchaindb/js-bigchaindb-driver/issues.
+The best way to send feedback is to file an issue at https://github.com/planetmint/planetmint-driver-ts/issues.
 
 If you are proposing a feature:
 
@@ -62,14 +63,14 @@ If you are proposing a feature:
 Get Started!
 ------------
 
-Ready to contribute? Here's how to set up `js-bigchaindb-driver`_ for local
+Ready to contribute? Here's how to set up `planetmint-driver-ts`_ for local
 development.
 
-1. Fork the `js-bigchaindb-driver`_ repo on GitHub.
+1. Fork the `planetmint-driver-ts`_ repo on GitHub.
 2. Clone your fork locally and enter into the project::
 
-    $ git clone git@github.com:your_name_here/js-bigchaindb-driver.git
-    $ cd js-bigchaindb-driver/
+    $ git clone git@github.com:your_name_here/planetmint-driver-ts.git
+    $ cd planetmint-driver-ts/
 
 3. Create a branch for local development::
 
@@ -103,9 +104,9 @@ Before you submit a pull request, check that it meets these guidelines:
    way for automate the tests...
 
 
-Dependency on Bigchaindb
+Dependency on Planetmint
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-This version is compatible from BigchainDB server v0.10.1
+This version is compatible from Planetmint server v2.0.0
 
-.. _bigchaindb-driver: https://github.com/bigchaindb/js-bigchaindb-driver
+.. _planetmint-driver: https://github.com/planetmint/planetmint-driver-ts
