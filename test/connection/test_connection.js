@@ -42,7 +42,7 @@ test('Generate API URLS', t => {
         'transactionsAsync': 'transactions?mode=async',
         'transactionsCommit': 'transactions?mode=commit',
         'transactionsDetail': 'transactions/%(transactionId)s',
-        'assets': 'assets',
+        'assets': 'assets/%(cid)s',
     }
     Object.keys(endpoints).forEach(endpointName => {
         const url = Connection.getApiUrls(endpointName)
@@ -226,7 +226,7 @@ test('Get asset for text with default limit', t => {
     conn.searchAssets(cid)
     t.truthy(conn._req.calledWith(
         expectedPath,
-        { query: { cid, limit: 10 } }
+        { urlTemplateSpec: { cid }, query: { limit: 10 } }
     ))
 })
 
@@ -241,7 +241,7 @@ test('Get asset for text with custom limit', t => {
     conn.searchAssets(cid, limit)
     t.truthy(conn._req.calledWith(
         expectedPath,
-        { query: { cid, limit: limit } }
+        { urlTemplateSpec: { cid }, query: { limit } }
     ))
 })
 

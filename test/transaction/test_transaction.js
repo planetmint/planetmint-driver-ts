@@ -11,7 +11,7 @@ import { Transaction } from '../../src'
 import {
     alice,
     aliceOutput,
-    metaData,
+    metaDataCID,
     createTx,
     transferTx
 } from '../constants'
@@ -73,12 +73,12 @@ test('Create TRANSFER transaction based on CREATE transaction', t => {
     Transaction.makeTransferTransaction(
         [{ tx: createTx, output_index: 0 }],
         [aliceOutput],
-        metaData
+        metaDataCID
     )
     const expected = [
         'TRANSFER',
         [{ id: createTx.id }],
-        metaData,
+        metaDataCID,
         [aliceOutput],
         [Transaction.makeInputTemplate(
             [alice.publicKey],
@@ -98,12 +98,12 @@ test('Create TRANSFER transaction based on TRANSFER transaction', t => {
     Transaction.makeTransferTransaction(
         [{ tx: transferTx, output_index: 0 }],
         [aliceOutput],
-        metaData
+        metaDataCID
     )
     const expected = [
         'TRANSFER',
         [{ id: transferTx.assets[0].id }],
-        metaData,
+        metaDataCID,
         [aliceOutput],
         [Transaction.makeInputTemplate(
             [alice.publicKey],
