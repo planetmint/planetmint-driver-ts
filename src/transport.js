@@ -38,7 +38,7 @@ export default class Transport {
         return connection
     }
 
-    async forwardRequest(path, headers) {
+    async forwardRequest(path, config) {
         let response
         let connection
         // A new request will be executed until there is a valid response or timeout < 0
@@ -49,7 +49,7 @@ export default class Transport {
             // eslint-disable-next-line no-await-in-loop
             response = await connection.request(
                 path,
-                headers,
+                config,
                 this.timeout,
                 this.maxBackoffTime
             )

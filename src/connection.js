@@ -65,7 +65,7 @@ export default class Connection {
             'transactionsAsync': 'transactions?mode=async',
             'transactionsCommit': 'transactions?mode=commit',
             'transactionsDetail': 'transactions/%(transactionId)s',
-            'assets': 'assets',
+            'assets': 'assets/%(cid)s',
             'metadata': 'metadata'
         }[endpoint]
     }
@@ -181,8 +181,10 @@ export default class Connection {
      */
     searchAssets(cid, limit = 10) {
         return this._req(Connection.getApiUrls('assets'), {
+            urlTemplateSpec: {
+                cid
+            },
             query: {
-                cid,
                 limit
             }
         })
