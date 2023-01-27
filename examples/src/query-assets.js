@@ -5,6 +5,9 @@
 
 /* eslint-disable import/no-unresolved */
 
+const { CID } = require('multiformats/cid')
+const json = require('multiformats/codecs/json')
+const { sha256 } = require('multiformats/hashes/sha2')
 const driver = require('planetmint-driver')
 require('dotenv').config()
 
@@ -24,11 +27,19 @@ assetArray.push({ 'bicycle': { 'serial_number': 'fgh', 'manufacturer': 'Bicycles
 
 const metadata = { 'planet': 'Pluto' }
 
+async function toCID(obj) {
+    const bytes = json.encode(obj)
+    const assetHash = await sha256.digest(bytes)
+    return CID.create(1, json.code, assetHash).toString()
+}
+
 // ======== Create Transactions for bicycles ======== //
-function createTx(assetdata) {
+async function createTx(assetdata) {
+    const assetCID = await toCID(assetdata)
+    const metadataCID = await toCID(metadata)
     const txCreate = driver.Transaction.makeCreateTransaction(
-        assetdata,
-        metadata,
+        [assetCID],
+        metadataCID,
         [
             driver.Transaction.makeOutput(driver.Transaction.makeEd25519Condition(alice.publicKey))
         ],
@@ -39,13 +50,15 @@ function createTx(assetdata) {
     return conn.postTransactionCommit(txCreateSigned)
 }
 
-// ======== Execute all promises in order to post transactions and fetch them ======== //
-Promise.all(assetArray.map(createTx))
+async function queryAssets() {
+    // ======== Execute all promises in order to post transactions and fetch them ======== //
+    await Promise.all(assetArray.map(createTx))
+    const assetCID = await toCID(assetArray[0])
+    const assets = await conn.searchAssets(assetCID)
+    console.log(`Found assets with CID: ${assetCID}`, assets) // eslint-disable-line no-console
+}
 
-// ======== Querying Assets for Assetdata ======== //
-    .then(() => conn.searchAssets('BicyclesInc'))
-    .then(assets => console.log('Found assets with serial number "BicyclesInc":', assets)) // eslint-disable-line no-console
-
-// ======== Querying Assets for Metadata ======== //
-    .then(() => conn.searchMetadata('Pluto'))
-    .then(assets => console.log('Found assets with metadata "Pluto":', assets)) // eslint-disable-line no-console
+queryAssets.catch(e => {
+    console.error(e)
+    process.exit(1)
+})

@@ -33,6 +33,7 @@
   "dependencies": {
     "planetmint-driver": "^0.0.1",
     "bip39": "^3.0.3",
-    "dotenv": "^16.0.3"
+    "dotenv": "^16.0.3",
+    "multiformats": "^11.0.1"
   }
 }
