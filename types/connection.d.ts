@@ -23,7 +23,7 @@ export interface InputNode {
 }
 
 export type AssetResult = {
-  id: string;
+  id?: string;
   data: Record<string, any> | CID;
 };
 
@@ -73,7 +73,8 @@ export interface EndpointsResponse<
   D = CID,
   M = CID
 > {
-  [Endpoints.blocks]: number[];
+  // [?, ?, block height, assets ids]
+  [Endpoints.blocks]: [[string, string, number, string[]]];
   [Endpoints.blocksDetail]: {
     height: number;
     transactions: (CreateTransaction | TransferTransaction)[];
@@ -92,7 +93,7 @@ export interface EndpointsResponse<
   [Endpoints.transactionsCommit]: TransactionResult<O, V, D, M>;
   [Endpoints.transactionsDetail]: TransactionResult<O, V, D, M>;
   [Endpoints.assets]: AssetResult[];
-  [Endpoints.metadata]: MetadataResult[];
+  // [Endpoints.metadata]: MetadataResult[];
 }
 
 export default class Connection {
@@ -184,8 +185,9 @@ export default class Connection {
     limit?: number
   ): Promise<EndpointsResponse[Endpoints.assets]>;
 
-  searchMetadata(
-    search: string,
-    limit?: number
-  ): Promise<EndpointsResponse[Endpoints.metadata]>;
+  // not supported in Planetmint
+  // searchMetadata(
+  //   search: string,
+  //   limit?: number
+  // ): Promise<EndpointsResponse[Endpoints.metadata]>;
 }
