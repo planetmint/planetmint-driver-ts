@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: (AGPL-3.0-or-later AND CC-BY-4.0)
 // Code is AGPL-3.0-or-later and docs are CC-BY-4.0
 
-import baseRequest from './baseRequest'
+import baseRequest, { ResponseError, TIMEOUT_ERROR } from './baseRequest'
 import sanitize from './sanitize'
 
 const DEFAULT_REQUEST_CONFIG = {
@@ -13,7 +13,6 @@ const DEFAULT_REQUEST_CONFIG = {
 }
 
 const BACKOFF_DELAY = 500 // 0.5 seconds
-const ERROR_FROM_SERVER = 'HTTP Error: Requested page not reachable'
 /**
  * @private
  * Small wrapper around js-utility-belt's request that provides url resolving,
@@ -60,10 +59,7 @@ export default class Request {
         const backoffTimedelta = this.getBackoffTimedelta()
 
         if (timeout != null && timeout < backoffTimedelta) {
-            const errorObject = {
-                message: 'TimeoutError'
-            }
-            throw errorObject
+            throw new Error(TIMEOUT_ERROR)
         }
         if (backoffTimedelta > 0) {
             await Request.sleep(backoffTimedelta)
@@ -73,7 +69,7 @@ export default class Request {
         return baseRequest(apiUrl, requestConfig, requestTimeout)
             .then((res) => {
                 this.connectionError = null
-                return res.json()
+                return res
             })
             .catch(err => {
                 // ConnectionError
@@ -88,7 +84,7 @@ export default class Request {
         if (!this.connectionError) {
             this.retries = 0
             this.backoffTime = null
-        } else if (this.connectionError.message === ERROR_FROM_SERVER) {
+        } else if (this.connectionError.name === ResponseError.name) {
             // If status is not a 2xx (based on Response.ok), throw error
             this.retries = 0
             this.backoffTime = null
@@ -98,7 +94,7 @@ export default class Request {
             const backoffTimedelta = Math.min(BACKOFF_DELAY * (2 ** this.retries), maxBackoffTime)
             this.backoffTime = Date.now() + backoffTimedelta
             this.retries += 1
-            if (this.connectionError.message === 'TimeoutError') {
+            if (this.connectionError.message === TIMEOUT_ERROR) {
                 throw this.connectionError
             }
         }

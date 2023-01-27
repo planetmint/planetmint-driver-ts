@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: (AGPL-3.0-or-later AND CC-BY-4.0)
 // Code is AGPL-3.0-or-later and docs are CC-BY-4.0
 
+import { TIMEOUT_ERROR } from './baseRequest'
 import Request from './request'
 
 /**
@@ -60,6 +61,6 @@ export default class Transport {
                 return response
             }
         }
-        throw new Error('TimeoutError')
+        throw new Error(TIMEOUT_ERROR)
     }
 }

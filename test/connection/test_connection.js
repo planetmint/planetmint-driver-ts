@@ -245,7 +245,8 @@ test('Get asset for text with custom limit', t => {
     ))
 })
 
-test('Get metadata for text with default limit', t => {
+// metadata search is disabled in planetmint
+test.skip('Get metadata for text with default limit', t => {
     const expectedPath = 'path'
     const search = 'abc'
 
@@ -259,7 +260,7 @@ test('Get metadata for text with default limit', t => {
     ))
 })
 
-test('Get metadata for text with custom limit', t => {
+test.skip('Get metadata for text with custom limit', t => {
     const expectedPath = 'path'
     const search = 'abc'
     const limit = 5

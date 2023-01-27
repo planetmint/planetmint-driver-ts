@@ -10,12 +10,12 @@ const baseRequestFile = rewire('../../src/baseRequest.js')
 const baseRequest = baseRequestFile.__get__('baseRequest')
 const handleResponse = baseRequestFile.__get__('handleResponse')
 
-test('HandleResponse does not throw error for response ok', t => {
+test('HandleResponse does not throw error for response ok', async t => {
     const testObj = {
         ok: true
     }
     const expected = testObj
-    const actual = handleResponse(testObj)
+    const actual = await handleResponse(testObj)
 
     t.deepEqual(actual, expected)
 })

@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: (AGPL-3.0-or-later AND CC-BY-4.0)
 // Code is AGPL-3.0-or-later and docs are CC-BY-4.0
 
-// TODO: remove abort-controller when using Node >=15
 import AbortController from 'abort-controller'
 import { Promise } from 'es6-promise'
 import fetchPonyfill from 'fetch-ponyfill'
@@ -13,6 +12,8 @@ import formatText from './format_text'
 import stringifyAsQueryParam from './stringify_as_query_param'
 
 const fetch = fetchPonyfill({ Promise })
+
+export const TIMEOUT_ERROR = 'TimeoutError'
 
 export function ResponseError(message, status, requestURI) {
     this.name = 'ResponseError'
@@ -25,21 +26,18 @@ export function ResponseError(message, status, requestURI) {
 ResponseError.prototype = new Error()
 
 /**
- * @private
  * Timeout function following https://github.com/github/fetch/issues/175#issuecomment-284787564
- * @param {integer} obj Source object
- * @param {Promise} filter Array of key names to select or function to invoke per iteration
+ * @private
+ * @param {integer} ms timeout
+ * @param {Promise} promise Fetch promise
  * @param {AbortController} controller AbortController instance bound to fetch
- * @return {Object} TimeoutError if the time was consumed, otherwise the Promise will be resolved
+ * @return {Promise} TimeoutError if the time was consumed, otherwise the Promise will be resolved
  */
 function timeout(ms, promise, controller) {
     return new Promise((resolve, reject) => {
         const nodeTimeout = setTimeout(() => {
             controller.abort()
-            const errorObject = {
-                message: 'TimeoutError',
-            }
-            reject(new Error(errorObject))
+            reject(new Error(TIMEOUT_ERROR))
         }, ms)
         promise
             .then((res) => {
@@ -55,21 +53,24 @@ function timeout(ms, promise, controller) {
 
 /**
  * @private
- * @param {Promise} res Source object
+ * @param {Response} res Source object
  * @return {Promise} Promise that will resolve with the response if its status was 2xx;
- *                          otherwise rejects with the response
+ *                          otherwise rejects with the ResponseError
  */
-function handleResponse(res) {
+async function handleResponse(res) {
     // If status is not a 2xx (based on Response.ok), assume it's an error
     // See https://developer.mozilla.org/en-US/docs/Web/API/GlobalFetch/fetch
+    const contentType = res.headers?.get('content-type')
+    const isJson = contentType === 'application/json'
+    const body = (isJson ? await res.json() : undefined)
     if (!(res && res.ok)) {
         throw new ResponseError(
-            'HTTP Error: Requested page not reachable',
+            body?.message || 'HTTP Error: Requested page not reachable',
             `${res.status} ${res.statusText}`,
             res.url
         )
     }
-    return res
+    return body || { ok: true }
 }
 
 /**
@@ -94,9 +95,9 @@ function handleResponse(res) {
  * @param  {string|Object} config.query           Query parameter to append to the end of the url.
  *                                                If specified as an object, keys will be
  *                                                decamelized into snake case first.
- * @param  {*[]|Object}    config.urlTemplateSpec Format spec to use to expand the url (see sprintf).
- * @param  {*}             config.*               All other options are passed through to fetch.
- * @param  {integer}         requestTimeout         Timeout for a single request
+ * @param  {*[]|Object}     config.urlTemplateSpec Format spec to use to expand the url (see sprintf).
+ * @param  {*}              config.*               All other options are passed through to fetch.
+ * @param  {integer}        requestTimeout         Timeout for a single request
  *
  * @return {Promise}        If requestTimeout the timeout function will be called. Otherwise resolve the
  *                          Promise with the handleResponse function
@@ -152,7 +153,6 @@ export default function baseRequest(
             controller
         )
             .then(handleResponse)
-    } else {
-        return fetch.fetch(expandedUrl, fetchConfig).then(handleResponse)
     }
+    return fetch.fetch(expandedUrl, fetchConfig).then(handleResponse)
 }
