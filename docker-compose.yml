@@ -32,7 +32,7 @@ services:
       - mongodb
       - tendermint
       - tarantool
-    image: planetmint/planetmint:latest
+    image: ghcr.io/planetmint/planetmint:sha-8305d12
     environment:
       PLANETMINT_DATABASE_BACKEND: tarantool_db
       PLANETMINT_DATABASE_HOST: tarantool
