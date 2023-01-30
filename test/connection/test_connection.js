@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: (AGPL-3.0-or-later AND CC-BY-4.0)
 // Code is AGPL-3.0-or-later and docs are CC-BY-4.0
 
+import { URL } from 'url'
 import test from 'ava'
 import sinon from 'sinon'
 
@@ -16,12 +17,14 @@ import {
 const conn = new Connection(API_PATH)
 
 test('Payload thrown at incorrect API_PATH', async t => {
-    const path = 'http://localhost:9984/api/wrong/'
+    const urlObject = new URL(API_PATH)
+    urlObject.pathname = 'api/wrong'
+    const path = urlObject.href
     const connection = new Connection(path)
     const target = {
         message: 'HTTP Error: Requested page not reachable',
         status: '404 NOT FOUND',
-        requestURI: 'http://localhost:9984/api/wrong/transactions/transactionId'
+        requestURI: `${path}/transactions/transactionId`
     }
     const error = await t.throwsAsync(connection.getTransaction('transactionId'), {
         instanceOf: Error, message: target.message

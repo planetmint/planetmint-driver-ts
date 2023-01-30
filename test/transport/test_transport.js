@@ -8,9 +8,12 @@ import test from 'ava'
 import {
     Connection
 } from '../../src'
+import {
+    API_PATH
+} from '../constants'
 
 test('Pick connection with earliest backoff time', async t => {
-    const path1 = 'http://localhost:9984/api/v1/'
+    const path1 = API_PATH
     const path2 = 'http://localhostwrong:9984/api/v1/'
 
     // Reverse order

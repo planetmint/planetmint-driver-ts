@@ -15,6 +15,7 @@ import { Transaction, Ed25519Keypair } from '../src'
 // TODO: Find out if ava has something like conftest, if so put this there.
 
 export const API_PATH = 'http://localhost:9984/api/v1/'
+// export const API_PATH = 'https://test.ipdb.io/api/v1/'
 
 // transaction schema v2
 // NOTE: It's safer to cast `Math.random()` to a string, to avoid differences
