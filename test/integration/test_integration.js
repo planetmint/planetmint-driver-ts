@@ -405,9 +405,9 @@ test('Search blocks containing a transaction', async t => {
     const { id } = await conn.postTransactionCommit(createTxSigned)
     const blocks = await conn.listBlocks(id)
     const blockHeight = blocks.height
-    const { transactions } = await conn.getBlock(blockHeight)
-    t.truthy(blocks.transactions.some((txId) => txId === createTxSigned.id))
-    t.truthy(transactions.some((tx) => tx.id === createTxSigned.id))
+    const block = await conn.getBlock(blockHeight)
+    t.truthy(blocks.transaction_ids.some((txId) => txId === createTxSigned.id))
+    t.truthy(block.transaction_ids.some((txId) => txId === createTxSigned.id))
 })
 
 test('Search transaction containing an asset', async t => {

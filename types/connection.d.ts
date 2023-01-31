@@ -76,11 +76,12 @@ export interface EndpointsResponse<
   [Endpoints.blocks]: {
     app_hash: string;
     height: number;
-    transactions: string[] & { 0: string };
+    transaction_ids: string[] & { 0: string };
   };
   [Endpoints.blocksDetail]: {
+    app_hash: string;
     height: number;
-    transactions: (CreateTransaction | TransferTransaction)[];
+    transaction_ids: string[] & { 0: string };
   };
   [Endpoints.outputs]: {
     transaction_id: string;
