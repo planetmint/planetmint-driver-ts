@@ -18,13 +18,13 @@ const conn = new Connection(API_PATH)
 
 test('Payload thrown at incorrect API_PATH', async t => {
     const urlObject = new URL(API_PATH)
-    urlObject.pathname = 'api/wrong'
+    urlObject.pathname = 'api/wrong/'
     const path = urlObject.href
     const connection = new Connection(path)
     const target = {
         message: 'HTTP Error: Requested page not reachable',
         status: '404 NOT FOUND',
-        requestURI: `${path}/transactions/transactionId`
+        requestURI: `${path}transactions/transactionId`
     }
     const error = await t.throwsAsync(connection.getTransaction('transactionId'), {
         instanceOf: Error, message: target.message
