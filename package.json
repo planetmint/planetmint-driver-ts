@@ -1,5 +1,5 @@
 {
-  "name": "planetmint-driver",
+  "name": "@planetmint/driver",
   "version": "0.0.0",
   "description": "Node.js driver for Planetmint",
   "homepage": "https://planetmint.io/",
@@ -17,6 +17,7 @@
   "main": "./dist/node/index.js",
   "browser": "./dist/browser/planetmint-driver.cjs2.min.js",
   "types": "./types/index.d.ts",
+  "access": "public",
   "sideEffects": false,
   "scripts": {
     "lint": "eslint .",
