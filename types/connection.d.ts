@@ -73,8 +73,11 @@ export interface EndpointsResponse<
   D = CID,
   M = CID
 > {
-  // [?, ?, block height, assets ids]
-  [Endpoints.blocks]: [[string, string, number, string[]]];
+  [Endpoints.blocks]: {
+    app_hash: string;
+    height: number;
+    transactions: string[] & { 0: string };
+  };
   [Endpoints.blocksDetail]: {
     height: number;
     transactions: (CreateTransaction | TransferTransaction)[];
