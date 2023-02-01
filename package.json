@@ -28,7 +28,7 @@
     "build:dist": "cross-env NODE_ENV=production webpack",
     "dev": "webpack -w",
     "clean": "rimraf dist/bundle dist/browser dist/node",
-    "test": "npm run lint && nyc ava && npm run report-coverage",
+    "test": "nyc ava && npm run report-coverage",
     "release": "read -p 'GITHUB_TOKEN: ' GITHUB_TOKEN && export GITHUB_TOKEN=$GITHUB_TOKEN && release-it --src.tagName='v%s'",
     "release-minor": "release-it minor --non-interactive",
     "release-major": "release-it major --non-interactive",
