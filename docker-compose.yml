@@ -24,7 +24,7 @@ services:
     depends_on:
       - tendermint
       - tarantool
-    image: ghcr.io/planetmint/planetmint:sha-3cb9424
+    image: ghcr.io/planetmint/planetmint:sha-2bb0539
     # build:
     #   context: .
     #   dockerfile: ./compose/Dockerfile
