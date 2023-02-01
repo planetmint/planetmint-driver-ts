@@ -3,14 +3,14 @@ name: CI
 on:
   push:
     branches:
-      - master
+      - main
     paths-ignore:
       - README.md
       - API.md
       - docs/*.rst
   pull_request:
     branches:
-      - master
+      - main
     types:
       - ready_for_review
       - opened
@@ -29,23 +29,30 @@ jobs:
 
     steps:
       - name: Checkout the commit
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up Node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 16
 
       - name: Cache dependencies
         id: cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/.npm
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
 
-      - name: Run BigChainDB node
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run Planetmint node
         run: |
           echo Building and starting up docker containers
           docker-compose -f ./docker-compose.yml up -d
@@ -61,7 +68,8 @@ jobs:
       - name: Build
         run: npm run build
 
-      # ensure BCDB node is up and running
+      # ensure Planetmint node is up and running
+      # eventually we could make something more reliable by pinging Planetmint until its healthy
       - run: sleep 20
 
       - name: Test

@@ -1,6 +1,7 @@
-// Copyright BigchainDB GmbH and BigchainDB contributors
-// SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
-// Code is Apache-2.0 and docs are CC-BY-4.0
+// Copyright © 2020 Interplanetary Database Association e.V.,
+// Planetmint and IPDB software contributors.
+// SPDX-License-Identifier: (AGPL-3.0-or-later AND CC-BY-4.0)
+// Code is AGPL-3.0-or-later and docs are CC-BY-4.0
 
 import stableStringify from 'json-stable-stringify'
 import clone from 'clone'
@@ -19,7 +20,7 @@ export default class Transaction {
      * @return {string} a canonically serialized Transaction
      */
     static serializeTransactionIntoCanonicalString(transaction) {
-        // BigchainDB signs fulfillments by serializing transactions into a
+        // Planetmint signs fulfillments by serializing transactions into a
         // "canonical" format where
         const tx = clone(transaction)
         // TODO: set fulfillments to null
@@ -35,23 +36,35 @@ export default class Transaction {
         }
     }
 
-    static makeTransactionTemplate() {
+    static makeTransactionTemplate(version = '3.0') {
         const txTemplate = {
             id: null,
             operation: null,
             outputs: [],
             inputs: [],
             metadata: null,
-            asset: null,
-            version: '2.0',
+            ...(version === '3.0' && { assets: null }),
+            ...(version === '2.0' && { asset: null }),
+            version,
         }
         return txTemplate
     }
 
-    static makeTransaction(operation, asset, metadata = null, outputs = [], inputs = []) {
-        const tx = Transaction.makeTransactionTemplate()
+    static makeTransaction(
+        operation,
+        assets,
+        metadata = null,
+        outputs = [],
+        inputs = [],
+        version = '3.0'
+    ) {
+        const tx = Transaction.makeTransactionTemplate(version)
         tx.operation = operation
-        tx.asset = asset
+        if (version === '3.0') {
+            tx.assets = assets
+        } else if (version === '2.0') {
+            tx.asset = assets
+        }
         tx.metadata = metadata
         tx.inputs = inputs
         tx.outputs = outputs
@@ -61,8 +74,8 @@ export default class Transaction {
     /**
      * Generate a `CREATE` transaction holding the `asset`, `metadata`, and `outputs`, to be signed by
      * the `issuers`.
-     * @param {Object} asset Created asset's data
-     * @param {Object} metadata Metadata for the Transaction
+     * @param {Object|string[]} asset Created asset's data as object or CIDs
+     * @param {Object|string} metadata Metadata for the Transaction as object or CID
      * @param {Object[]} outputs Array of Output objects to add to the Transaction.
      *                           Think of these as the recipients of the asset after the transaction.
      *                           For `CREATE` Transactions, this should usually just be a list of
@@ -76,13 +89,21 @@ export default class Transaction {
      * @returns {Object} Unsigned transaction -- make sure to call signTransaction() on it before
      *                   sending it off!
      */
-    static makeCreateTransaction(asset, metadata, outputs, ...issuers) {
-        const assetDefinition = {
-            data: asset || null,
+    static makeCreateTransaction(assetData, metadata, outputs, ...issuers) {
+        // TODO: validate assetData and metadata
+        const assets = assetData.map(el => ({
+            data: el || null,
+        }))
+        const inputs = issuers.map((issuer) => Transaction.makeInputTemplate([issuer]))
+        return Transaction.makeTransaction('CREATE', assets, metadata, outputs, inputs, '3.0')
+    }
+
+    static makeCreateTransactionV2(assetData, metadata, outputs, ...issuers) {
+        const asset = {
+            data: assetData || null,
         }
         const inputs = issuers.map((issuer) => Transaction.makeInputTemplate([issuer]))
-
-        return Transaction.makeTransaction('CREATE', assetDefinition, metadata, outputs, inputs)
+        return Transaction.makeTransaction('CREATE', asset, metadata, outputs, inputs, '2.0')
     }
 
     /**
@@ -160,6 +181,32 @@ export default class Transaction {
         return json ? ccJsonify(thresholdCondition) : thresholdCondition
     }
 
+    static makeBaseTransferTransaction(unspentOutputs) {
+        const inputs = unspentOutputs.map((unspentOutput) => {
+            const { tx, outputIndex } = { tx: unspentOutput.tx, outputIndex: unspentOutput.output_index }
+            const fulfilledOutput = tx.outputs[outputIndex]
+            const transactionLink = {
+                output_index: outputIndex,
+                transaction_id: tx.id,
+            }
+            return Transaction.makeInputTemplate(fulfilledOutput.public_keys, transactionLink)
+        })
+
+        const { tx } = unspentOutputs[0]
+        if (tx.version === '3.0') {
+            const assets = tx.operation === 'CREATE' ?
+                [{ id: tx.id }] :
+                tx.assets.map(el => ({ id: el.id }))
+            return { assets, inputs }
+        }
+        const asset = {
+            id: tx.operation === 'CREATE' ?
+                tx.id :
+                tx.asset.id
+        }
+        return { asset, inputs }
+    }
+
     /**
      * Generate a `TRANSFER` transaction holding the `asset`, `metadata`, and `outputs`, that fulfills
      * the `fulfilledOutputs` of `unspentTransaction`.
@@ -179,29 +226,23 @@ export default class Transaction {
      * @returns {Object} Unsigned transaction -- make sure to call signTransaction() on it before
      *                   sending it off!
      */
-    // TODO:
-    // - Make `metadata` optional argument
     static makeTransferTransaction(
         unspentOutputs,
         outputs,
-        metadata
+        metadata = null
     ) {
-        const inputs = unspentOutputs.map((unspentOutput) => {
-            const { tx, outputIndex } = { tx: unspentOutput.tx, outputIndex: unspentOutput.output_index }
-            const fulfilledOutput = tx.outputs[outputIndex]
-            const transactionLink = {
-                output_index: outputIndex,
-                transaction_id: tx.id,
-            }
+        // TODO: validate unspentOutputs, outputs and metadata
+        const { assets, inputs } = this.makeBaseTransferTransaction(unspentOutputs)
+        return Transaction.makeTransaction('TRANSFER', assets, metadata, outputs, inputs, '3.0')
+    }
 
-            return Transaction.makeInputTemplate(fulfilledOutput.public_keys, transactionLink)
-        })
-
-        const assetLink = {
-            id: unspentOutputs[0].tx.operation === 'CREATE' ? unspentOutputs[0].tx.id
-                : unspentOutputs[0].tx.asset.id
-        }
-        return Transaction.makeTransaction('TRANSFER', assetLink, metadata, outputs, inputs)
+    static makeTransferTransactionV2(
+        unspentOutputs,
+        outputs,
+        metadata = null
+    ) {
+        const { asset, inputs } = this.makeBaseTransferTransaction(unspentOutputs)
+        return Transaction.makeTransaction('TRANSFER', asset, metadata, outputs, inputs, '2.0')
     }
 
     /**

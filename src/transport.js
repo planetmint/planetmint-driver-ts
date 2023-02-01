@@ -1,7 +1,9 @@
-// Copyright BigchainDB GmbH and BigchainDB contributors
-// SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
-// Code is Apache-2.0 and docs are CC-BY-4.0
+// Copyright © 2020 Interplanetary Database Association e.V.,
+// Planetmint and IPDB software contributors.
+// SPDX-License-Identifier: (AGPL-3.0-or-later AND CC-BY-4.0)
+// Code is AGPL-3.0-or-later and docs are CC-BY-4.0
 
+import { TIMEOUT_ERROR } from './baseRequest'
 import Request from './request'
 
 /**
@@ -36,7 +38,7 @@ export default class Transport {
         return connection
     }
 
-    async forwardRequest(path, headers) {
+    async forwardRequest(path, config) {
         let response
         let connection
         // A new request will be executed until there is a valid response or timeout < 0
@@ -47,7 +49,7 @@ export default class Transport {
             // eslint-disable-next-line no-await-in-loop
             response = await connection.request(
                 path,
-                headers,
+                config,
                 this.timeout,
                 this.maxBackoffTime
             )
@@ -59,6 +61,6 @@ export default class Transport {
                 return response
             }
         }
-        throw new Error('TimeoutError')
+        throw new Error(TIMEOUT_ERROR)
     }
 }

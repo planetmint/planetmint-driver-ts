@@ -1,6 +1,7 @@
-// Copyright BigchainDB GmbH and BigchainDB contributors
-// SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
-// Code is Apache-2.0 and docs are CC-BY-4.0
+// Copyright © 2020 Interplanetary Database Association e.V.,
+// Planetmint and IPDB software contributors.
+// SPDX-License-Identifier: (AGPL-3.0-or-later AND CC-BY-4.0)
+// Code is AGPL-3.0-or-later and docs are CC-BY-4.0
 
 import { createHash } from 'crypto'
 import { validateFulfillment } from 'crypto-conditions'
@@ -68,8 +69,8 @@ test('Threshold condition encoding', t => {
 test('Fulfillment correctly formed', t => {
     const alice = new Ed25519Keypair()
     const txCreate = Transaction.makeCreateTransaction(
-        {},
-        {},
+        [],
+        null,
         [Transaction.makeOutput(Transaction.makeEd25519Condition(alice.publicKey))],
         alice.publicKey
     )
@@ -79,7 +80,7 @@ test('Fulfillment correctly formed', t => {
     const txTransfer = Transaction.makeTransferTransaction(
         [{ tx: signCreateTransaction, output_index: 0 }],
         [Transaction.makeOutput(Transaction.makeEd25519Condition(alice.publicKey))],
-        {}
+        null
     )
     const txSigned = Transaction.signTransaction(txTransfer, alice.privateKey)
 
@@ -102,8 +103,8 @@ test('Delegated signature is correct', t => {
     const alice = new Ed25519Keypair()
 
     const txCreate = Transaction.makeCreateTransaction(
-        {},
-        {},
+        [],
+        null,
         [Transaction.makeOutput(Transaction.makeEd25519Condition(alice.publicKey))],
         alice.publicKey
     )
@@ -120,8 +121,8 @@ test('Delegated async signature is correct', async t => {
     const alice = new Ed25519Keypair()
 
     const txCreate = Transaction.makeCreateTransaction(
-        {},
-        {},
+        [],
+        null,
         [Transaction.makeOutput(Transaction.makeEd25519Condition(alice.publicKey))],
         alice.publicKey
     )

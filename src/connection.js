@@ -1,6 +1,7 @@
-// Copyright BigchainDB GmbH and BigchainDB contributors
-// SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
-// Code is Apache-2.0 and docs are CC-BY-4.0
+// Copyright © 2020 Interplanetary Database Association e.V.,
+// Planetmint and IPDB software contributors.
+// SPDX-License-Identifier: (AGPL-3.0-or-later AND CC-BY-4.0)
+// Code is AGPL-3.0-or-later and docs are CC-BY-4.0
 
 import Transport from './transport'
 
@@ -64,7 +65,7 @@ export default class Connection {
             'transactionsAsync': 'transactions?mode=async',
             'transactionsCommit': 'transactions?mode=commit',
             'transactionsDetail': 'transactions/%(transactionId)s',
-            'assets': 'assets',
+            'assets': 'assets/%(cid)s',
             'metadata': 'metadata'
         }[endpoint]
     }
@@ -126,13 +127,13 @@ export default class Connection {
     }
 
     /**
-     * @param assetId
+     * @param assetIds
      * @param operation
      */
-    listTransactions(assetId, operation) {
+    listTransactions(assetIds, operation) {
         return this._req(Connection.getApiUrls('transactions'), {
             query: {
-                asset_id: assetId,
+                asset_ids: assetIds,
                 operation
             }
         })
@@ -176,26 +177,29 @@ export default class Connection {
     }
 
     /**
-     * @param search
+     * @param search by CID
      */
-    searchAssets(search, limit = 10) {
+    searchAssets(cid, limit = 10) {
         return this._req(Connection.getApiUrls('assets'), {
+            urlTemplateSpec: {
+                cid
+            },
             query: {
-                search,
                 limit
             }
         })
     }
 
+    // metadata search is now disabled in planetmint
     /**
      * @param search
      */
-    searchMetadata(search, limit = 10) {
-        return this._req(Connection.getApiUrls('metadata'), {
-            query: {
-                search,
-                limit
-            }
-        })
-    }
+    // searchMetadata(search, limit = 10) {
+    //     return this._req(Connection.getApiUrls('metadata'), {
+    //         query: {
+    //             search,
+    //             limit
+    //         }
+    //     })
+    // }
 }

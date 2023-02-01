@@ -1,22 +1,23 @@
 {
-  "name": "bigchaindb-driver",
-  "version": "4.3.0",
-  "description": "Node.js driver for BigchainDB",
-  "homepage": "https://www.bigchaindb.com/",
-  "bugs": "https://github.com/bigchaindb/js-bigchaindb-driver/issues",
+  "name": "@planetmint/driver",
+  "version": "0.0.0",
+  "description": "Node.js driver for Planetmint",
+  "homepage": "https://planetmint.io/",
+  "bugs": "https://github.com/planetmint/planetmint-driver-ts/issues",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bigchaindb/js-bigchaindb-driver.git"
+    "url": "git+https://github.com/planetmint/planetmint-driver-ts.git"
   },
-  "license": "Apache-2.0",
-  "author": "BigchainDB",
+  "license": "AGPL-3.0-or-later",
+  "author": "Planetmint",
   "files": [
     "dist",
     "types"
   ],
   "main": "./dist/node/index.js",
-  "browser": "./dist/browser/bigchaindb-driver.cjs2.min.js",
+  "browser": "./dist/browser/planetmint-driver.cjs2.min.js",
   "types": "./types/index.d.ts",
+  "access": "public",
   "sideEffects": false,
   "scripts": {
     "lint": "eslint .",
@@ -27,8 +28,7 @@
     "build:dist": "cross-env NODE_ENV=production webpack",
     "dev": "webpack -w",
     "clean": "rimraf dist/bundle dist/browser dist/node",
-    "test": "npm run lint && nyc ava && npm run report-coverage",
-    "thanks": "cowsay Hi, thanks for your interest in BigchainDB. We appreciate your contribution!",
+    "test": "nyc ava && npm run report-coverage",
     "release": "read -p 'GITHUB_TOKEN: ' GITHUB_TOKEN && export GITHUB_TOKEN=$GITHUB_TOKEN && release-it --src.tagName='v%s'",
     "release-minor": "release-it minor --non-interactive",
     "release-major": "release-it major --non-interactive",
@@ -42,14 +42,11 @@
     "@babel/core": "^7.17.2",
     "@babel/eslint-parser": "^7.17.0",
     "@babel/plugin-proposal-export-default-from": "^7.16.7",
-    "@babel/plugin-proposal-object-rest-spread": "^7.16.7",
     "@babel/plugin-syntax-async-generators": "^7.8.4",
-    "@babel/plugin-transform-async-to-generator": "^7.16.8",
     "@babel/plugin-transform-object-assign": "^7.16.7",
-    "@babel/plugin-transform-regenerator": "^7.16.7",
     "@babel/plugin-transform-runtime": "^7.17.0",
-    "@babel/preset-env": "^7.16.11",
-    "@babel/register": "^7.17.0",
+    "@babel/preset-env": "^7.20.2",
+    "@babel/register": "^7.18.9",
     "ava": "^3.15.0",
     "babel-loader": "^8.2.2",
     "buffer": "^6.0.3",
@@ -61,6 +58,7 @@
     "eslint-plugin-import": "^2.25.4",
     "husky": "^7.0.4",
     "lint-staged": "^12.3.4",
+    "multiformats": "^9.9.0",
     "nyc": "^15.1.0",
     "release-it": "^14.12.4",
     "rewire": "^6.0.0",
@@ -73,7 +71,7 @@
     "webpack-sources": "^3.2.3"
   },
   "dependencies": {
-    "@babel/runtime-corejs3": "^7.17.2",
+    "@babel/runtime-corejs3": "^7.20.13",
     "abort-controller": "^3.0.0",
     "bs58": "^4.0.1",
     "clone": "^2.1.2",
@@ -89,7 +87,7 @@
     "tweetnacl": "^1.0.3"
   },
   "keywords": [
-    "bigchaindb",
+    "planetmint",
     "driver",
     "blockchain",
     "decentralized",
@@ -105,19 +103,12 @@
       "test/**/*.js",
       "!test/constants.js"
     ],
-    "source": [
-      "**/*.{js,jsx}",
-      "!node_modules/**/*",
-      "!dist/**/*"
-    ],
     "failFast": true,
     "failWithoutAssertions": false,
     "tap": true,
-    "powerAssert": false,
     "require": [
       "@babel/register"
-    ],
-    "babel": true
+    ]
   },
   "husky": {
     "hooks": {

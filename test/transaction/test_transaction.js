@@ -1,6 +1,7 @@
-// Copyright BigchainDB GmbH and BigchainDB contributors
-// SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
-// Code is Apache-2.0 and docs are CC-BY-4.0
+// Copyright © 2020 Interplanetary Database Association e.V.,
+// Planetmint and IPDB software contributors.
+// SPDX-License-Identifier: (AGPL-3.0-or-later AND CC-BY-4.0)
+// Code is AGPL-3.0-or-later and docs are CC-BY-4.0
 
 import test from 'ava'
 import sinon from 'sinon'
@@ -10,7 +11,7 @@ import { Transaction } from '../../src'
 import {
     alice,
     aliceOutput,
-    metaData,
+    metaDataCID,
     createTx,
     transferTx
 } from '../constants'
@@ -72,17 +73,18 @@ test('Create TRANSFER transaction based on CREATE transaction', t => {
     Transaction.makeTransferTransaction(
         [{ tx: createTx, output_index: 0 }],
         [aliceOutput],
-        metaData
+        metaDataCID
     )
     const expected = [
         'TRANSFER',
-        { id: createTx.id },
-        metaData,
+        [{ id: createTx.id }],
+        metaDataCID,
         [aliceOutput],
         [Transaction.makeInputTemplate(
             [alice.publicKey],
             { output_index: 0, transaction_id: createTx.id }
-        )]
+        )],
+        '3.0'
     ]
     // NOTE: `src/transaction/makeTransaction` is `export default`, hence we
     // can only mock `makeTransaction.default` with a hack:
@@ -93,21 +95,21 @@ test('Create TRANSFER transaction based on CREATE transaction', t => {
 
 test('Create TRANSFER transaction based on TRANSFER transaction', t => {
     sinon.spy(Transaction, 'makeTransaction')
-
     Transaction.makeTransferTransaction(
         [{ tx: transferTx, output_index: 0 }],
         [aliceOutput],
-        metaData
+        metaDataCID
     )
     const expected = [
         'TRANSFER',
-        { id: transferTx.asset.id },
-        metaData,
+        [{ id: transferTx.assets[0].id }],
+        metaDataCID,
         [aliceOutput],
         [Transaction.makeInputTemplate(
             [alice.publicKey],
             { output_index: 0, transaction_id: transferTx.id }
-        )]
+        )],
+        '3.0'
     ]
 
     t.truthy(Transaction.makeTransaction.calledWith(...expected))
