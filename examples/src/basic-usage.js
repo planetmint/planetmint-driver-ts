@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: (AGPL-3.0-or-later AND CC-BY-4.0)
 // Code is AGPL-3.0-or-later and docs are CC-BY-4.0
 
+/* eslint-disable import/no-unresolved */
+
 const driver = require('@planetmint/driver')
 // const driver = require('../../dist/node/index')
 const { CID } = require('multiformats/cid')
