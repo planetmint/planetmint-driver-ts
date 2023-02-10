@@ -5,14 +5,15 @@
 
 /* eslint-disable import/no-unresolved */
 
+const driver = require('@planetmint/driver')
+// const driver = require('../../dist/node/index')
 const { CID } = require('multiformats/cid')
 const json = require('multiformats/codecs/json')
 const { sha256 } = require('multiformats/hashes/sha2')
-const driver = require('planetmint-driver')
 require('dotenv').config()
 
 // ======== Preparation ======== //
-const conn = new driver.Connection(process.env.PLANETMINT_API_PATH || 'https://example.com/api/v1/', {
+const conn = new driver.Connection(process.env.PLANETMINT_API_PATH || 'https://test.ipdb.io/api/v1/', {
     header1: 'header1_value',
     header2: 'header2_value'
 })
@@ -58,7 +59,11 @@ async function queryAssets() {
     console.log(`Found assets with CID: ${assetCID}`, assets) // eslint-disable-line no-console
 }
 
-queryAssets.catch(e => {
-    console.error(e)
-    process.exit(1)
-})
+(async () => {
+    try {
+        await queryAssets()
+    } catch (e) {
+        console.error(e)
+        process.exit(1)
+    }
+})()

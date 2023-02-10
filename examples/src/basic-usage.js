@@ -3,11 +3,11 @@
 // SPDX-License-Identifier: (AGPL-3.0-or-later AND CC-BY-4.0)
 // Code is AGPL-3.0-or-later and docs are CC-BY-4.0
 
-/* eslint-disable import/no-unresolved */
+const driver = require('@planetmint/driver')
+// const driver = require('../../dist/node/index')
 const { CID } = require('multiformats/cid')
 const json = require('multiformats/codecs/json')
 const { sha256 } = require('multiformats/hashes/sha2')
-const driver = require('planetmint-driver')
 require('dotenv').config()
 
 // ======== Preparation ======== //
@@ -40,7 +40,7 @@ async function basicUsage() {
 
     // ======== Create Transaction Bicycle ======== //
     const txCreateAliceSimple = driver.Transaction.makeCreateTransaction(
-        assetCID,
+        [assetCID],
         metadataCID,
         [
             driver.Transaction.makeOutput(driver.Transaction.makeEd25519Condition(alice.publicKey))
@@ -54,11 +54,12 @@ async function basicUsage() {
     // ======== POST CREATE Transaction ======== //
     const createdTx = await conn.postTransactionCommit(txCreateAliceSimpleSigned)
 
+    const metadatTransferCID = await toCID({ price: '100 euro' })
     // ======== POST TRANSFER Transaction ======== //
     const txTransferBob = driver.Transaction.makeTransferTransaction(
         [{ tx: createdTx, output_index: 0 }],
         [driver.Transaction.makeOutput(driver.Transaction.makeEd25519Condition(bob.publicKey))],
-        await toCID({ price: '100 euro' })
+        metadatTransferCID
     )
 
     const txTransferBobSigned = driver.Transaction.signTransaction(txTransferBob, alice.privateKey)
@@ -74,7 +75,11 @@ async function basicUsage() {
 }
 
 // Call async basic usage function
-basicUsage().catch(e => {
-    console.error(e)
-    process.exit(1)
-})
+(async () => {
+    try {
+        await basicUsage()
+    } catch (e) {
+        console.error(e)
+        process.exit(1)
+    }
+})()
