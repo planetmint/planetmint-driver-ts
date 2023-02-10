@@ -17,7 +17,9 @@
   "main": "./dist/node/index.js",
   "browser": "./dist/browser/planetmint-driver.cjs2.min.js",
   "types": "./types/index.d.ts",
-  "access": "public",
+  "publishConfig": {
+    "access": "public"
+  },
   "sideEffects": false,
   "scripts": {
     "lint": "eslint .",
