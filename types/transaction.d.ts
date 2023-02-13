@@ -47,7 +47,7 @@ export type Metadata<
 
 export type AssetData<
   V extends TransactionVersion = TransactionVersion.V3,
-  D extends Record<string, any> | CID
+  D extends Record<string, any> | CID = CID
 > = V extends TransactionVersion.V3 ? CID : D;
 
 export type TransactionAssetMap<
@@ -66,19 +66,17 @@ export interface TransactionCommon<
   O extends TransactionOperations,
   V extends TransactionVersion = TransactionVersion.V3,
   D extends Record<string, any> | CID = CID,
-  M extends Record<string, any> | CID = CID
+  M extends Record<string, any> = Record<string, any>
 > {
   id?: string;
   inputs: TransactionInput[];
   outputs: TransactionOutput[];
   version: V;
-  metadata: Metadata<M, V>;
+  metadata: Metadata<V, M>;
   operation: O;
-  asset: TransactionVersion extends TransactionVersion.V2
-    ? TransactionAssetMap<O, V, D>
-    : never;
-  assets: TransactionVersion extends TransactionVersion.V3
-    ? TransactionAssetMap<O, V, D>
+  asset: V extends TransactionVersion.V2 ? TransactionAssetMap<O, V, D> : never;
+  assets: V extends TransactionVersion.V3
+    ? TransactionAssetMap<O, V, D>[] & { 0: TransactionAssetMap<O, V, D> }
     : never;
 }
 
@@ -86,7 +84,7 @@ export interface TransactionCommonSigned<
   O extends TransactionOperations,
   V extends TransactionVersion = TransactionVersion.V3,
   D extends Record<string, any> | CID = CID,
-  M extends Record<string, any> | CID = CID
+  M extends Record<string, any> = Record<string, any>
 > extends Omit<TransactionCommon<O, V, D, M>, 'id'> {
   id: string;
 }
@@ -94,16 +92,15 @@ export interface TransactionCommonSigned<
 export interface CreateTransaction<
   V extends TransactionVersion = TransactionVersion.V3,
   D extends Record<string, any> | CID = CID,
-  M extends Record<string, any> | CID = CID
+  M extends Record<string, any> = Record<string, any>
 > extends TransactionCommon<TransactionOperations.CREATE, V, D, M> {
   id: string;
-  asset: TransactionAssetMap<TransactionOperations.CREATE, V, A>;
   operation: TransactionOperations.CREATE;
 }
 
 export interface TransferTransaction<
   V extends TransactionVersion = TransactionVersion.V3,
-  M extends Record<string, any> | CID = CID
+  M extends Record<string, any> = Record<string, any>
 > extends TransactionCommon<
     TransactionOperations.TRANSFER,
     V,
@@ -111,12 +108,13 @@ export interface TransferTransaction<
     M
   > {
   id: string;
-  asset: TransactionAssetMap<TransactionOperations.TRANSFER, V, { id: string }>;
   operation: TransactionOperations.TRANSFER;
 }
 
 export interface TransactionUnspentOutput {
-  tx: TransactionCommon;
+  tx: TransactionCommon<
+    TransactionOperations.CREATE | TransactionOperations.TRANSFER
+  >;
   output_index: number;
 }
 
@@ -126,7 +124,8 @@ interface TxTemplate<V extends TransactionVersion = TransactionVersion.V3> {
   outputs: [];
   inputs: [];
   metadata: null;
-  asset: null;
+  asset: V extends TransactionVersion.V2 ? null : never;
+  assets: V extends TransactionVersion.V3 ? null : never;
   version: V;
 }
 
@@ -223,8 +222,8 @@ export default class Transaction {
   static makeTransaction<
     O extends TransactionOperations,
     V extends TransactionVersion = TransactionVersion.V3,
-    D = Record<string, any>,
-    M = Record<string, any>
+    D extends Record<string, any> | CID = CID,
+    M extends Record<string, any> = Record<string, any>
   >(
     operation: O,
     assets: V extends TransactionVersion.V3
@@ -241,11 +240,11 @@ export default class Transaction {
     metadata: CID,
     outputs: TransactionOutput[],
     ...issuers: string[]
-  ): CreateTransaction<TransactionVersion.V3, CID[], CID>;
+  ): CreateTransaction<TransactionVersion.V3, CID[]>;
 
   static makeCreateTransactionV2<
-    D = Record<string, any>,
-    M = Record<string, any>
+    D extends Record<string, any> = Record<string, any>,
+    M extends Record<string, any> = Record<string, any>
   >(
     assetData: D,
     metadata: M,
@@ -273,9 +272,11 @@ export default class Transaction {
     unspentOutputs: TransactionUnspentOutput[],
     outputs: TransactionOutput[],
     metadata: CID
-  ): TransferTransaction<TransactionVersion.V3, CID>;
+  ): TransferTransaction<TransactionVersion.V3>;
 
-  static makeTransferTransactionV2<M = Record<string, any>>(
+  static makeTransferTransactionV2<
+    M extends Record<string, any> = Record<string, any>
+  >(
     unspentOutputs: TransactionUnspentOutput[],
     outputs: TransactionOutput[],
     metadata: M

@@ -8,8 +8,7 @@
     "clean": "rimraf ./dist",
     "start": "nodemon src/basic-usage.js --exec babel-node",
     "query-assets": "nodemon src/query-assets.js --exec babel-node",
-    "seed-func": "nodemon src/seed-func.js --exec babel-node",
-    "basic-async": "nodemon src/basic-usage-async-await.js --exec babel-node"
+    "seed-func": "nodemon src/seed-func.js --exec babel-node"
   },
   "author": "Planetmint",
   "license": "MIT",
@@ -31,9 +30,9 @@
   "repository": "/",
   "private": true,
   "dependencies": {
-    "planetmint-driver": "^0.0.1",
+    "@planetmint/driver": "^0.0.1",
     "bip39": "^3.0.3",
     "dotenv": "^16.0.3",
-    "multiformats": "^11.0.1"
+    "multiformats": "^9.9.0"
   }
 }

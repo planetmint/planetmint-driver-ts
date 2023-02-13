@@ -35,8 +35,8 @@ export type MetadataResult = {
 export type TransactionResult<
   O extends TransactionOperations,
   V extends TransactionVersion = TransactionVersion.V3,
-  D = CID,
-  M = CID
+  D extends Record<string, any> | CID = CID,
+  M extends Record<string, any> = Record<string, any>
 > = O extends TransactionOperations.CREATE
   ? CreateTransaction<V, D, M>
   : TransferTransaction<V, M>;
@@ -68,10 +68,10 @@ export interface EndpointsUrl {
 }
 
 export interface EndpointsResponse<
-  O = TransactionOperations.CREATE,
-  V = TransactionVersion.V3,
-  D = CID,
-  M = CID
+  O extends TransactionOperations = TransactionOperations.CREATE,
+  V extends TransactionVersion = TransactionVersion.V3,
+  D extends Record<string, any> | CID = CID,
+  M extends Record<string, any> = Record<string, any>
 > {
   [Endpoints.blocks]: {
     app_hash: string;
@@ -151,8 +151,8 @@ export default class Connection {
   postTransaction<
     O extends TransactionOperations,
     V extends TransactionVersion,
-    D = CID,
-    M = CID
+    D extends Record<string, any> | CID = CID,
+    M extends Record<string, any> = Record<string, any>
   >(
     transaction: TransactionCommon<O, V, D, M>
   ): Promise<EndpointsResponse<O, V, D, M>[Endpoints.transactionsCommit]>;
@@ -160,8 +160,8 @@ export default class Connection {
   postTransactionSync<
     O extends TransactionOperations,
     V extends TransactionVersion,
-    D = CID,
-    M = CID
+    D extends Record<string, any> | CID = CID,
+    M extends Record<string, any> = Record<string, any>
   >(
     transaction: TransactionCommon<O, V, D, M>
   ): Promise<EndpointsResponse<O, V, D, M>[Endpoints.transactionsSync]>;
@@ -169,8 +169,8 @@ export default class Connection {
   postTransactionAsync<
     O extends TransactionOperations,
     V extends TransactionVersion,
-    D = CID,
-    M = CID
+    D extends Record<string, any> | CID = CID,
+    M extends Record<string, any> = Record<string, any>
   >(
     transaction: TransactionCommon<O, V, D, M>
   ): Promise<EndpointsResponse<O, V, D, M>[Endpoints.transactionsAsync]>;
@@ -178,8 +178,8 @@ export default class Connection {
   postTransactionCommit<
     O extends TransactionOperations,
     V extends TransactionVersion,
-    D = CID,
-    M = CID
+    D extends Record<string, any> | CID = CID,
+    M extends Record<string, any> = Record<string, any>
   >(
     transaction: TransactionCommon<O, V, D, M>
   ): Promise<EndpointsResponse<O, V, D, M>[Endpoints.transactionsCommit]>;
