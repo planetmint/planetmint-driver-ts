@@ -30,7 +30,7 @@
   "repository": "/",
   "private": true,
   "dependencies": {
-    "@planetmint/driver": "^0.0.1",
+    "@planetmint/driver": "^0.1.0",
     "bip39": "^3.0.3",
     "dotenv": "^16.0.3",
     "multiformats": "^9.9.0"
