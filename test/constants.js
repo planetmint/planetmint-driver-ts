@@ -42,7 +42,7 @@ export const createTx = Transaction.makeCreateTransaction(
     [assetCID],
     metaDataCID,
     [aliceOutput],
-    alice.publicKey
+    [alice.publicKey]
 )
 export const transferTx = Transaction.makeTransferTransaction(
     [{ tx: createTx, output_index: 0 }],

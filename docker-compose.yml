@@ -24,13 +24,13 @@ services:
     depends_on:
       - tendermint
       - tarantool
-    image: ghcr.io/planetmint/planetmint:sha-2bb0539
-    # build:
-    #   context: .
-    #   dockerfile: ./compose/Dockerfile
-    #   args:
-    #     branch: main
-    #     backend: tarantool_db
+    # image: ghcr.io/planetmint/planetmint:sha-2bb0539
+    build:
+      context: .
+      dockerfile: ./compose/Dockerfile
+      args:
+        branch: main
+        backend: tarantool_db
     environment:
       PLANETMINT_DATABASE_BACKEND: tarantool_db
       PLANETMINT_DATABASE_HOST: tarantool

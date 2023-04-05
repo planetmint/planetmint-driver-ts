@@ -56,7 +56,8 @@ export default class Transaction {
         metadata = null,
         outputs = [],
         inputs = [],
-        version = '3.0'
+        version = '3.0',
+        script = null
     ) {
         const tx = Transaction.makeTransactionTemplate(version)
         tx.operation = operation
@@ -68,6 +69,9 @@ export default class Transaction {
         tx.metadata = metadata
         tx.inputs = inputs
         tx.outputs = outputs
+        if (script) {
+            tx.script = script
+        }
         return tx
     }
 
@@ -81,21 +85,22 @@ export default class Transaction {
      *                           For `CREATE` Transactions, this should usually just be a list of
      *                           Outputs wrapping Ed25519 Conditions generated from the issuers' public
      *                           keys (so that the issuers are the recipients of the created asset).
-     * @param {...string[]} issuers Public key of one or more issuers to the asset being created by this
+     * @param {string[]} issuers Public key of one or more issuers to the asset being created by this
      *                              Transaction.
      *                              Note: Each of the private keys corresponding to the given public
      *                              keys MUST be used later (and in the same order) when signing the
      *                              Transaction (`signTransaction()`).
+     * @param {Object} script Script object containing zenroom script, inputs and outputs
      * @returns {Object} Unsigned transaction -- make sure to call signTransaction() on it before
      *                   sending it off!
      */
-    static makeCreateTransaction(assetData, metadata, outputs, ...issuers) {
+    static makeCreateTransaction(assetData, metadata, outputs, issuers, script) {
         // TODO: validate assetData and metadata
         const assets = assetData.map(el => ({
             data: el || null,
         }))
         const inputs = issuers.map((issuer) => Transaction.makeInputTemplate([issuer]))
-        return Transaction.makeTransaction('CREATE', assets, metadata, outputs, inputs, '3.0')
+        return Transaction.makeTransaction('CREATE', assets, metadata, outputs, inputs, '3.0', script)
     }
 
     static makeCreateTransactionV2(assetData, metadata, outputs, ...issuers) {
