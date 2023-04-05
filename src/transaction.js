@@ -234,11 +234,12 @@ export default class Transaction {
     static makeTransferTransaction(
         unspentOutputs,
         outputs,
-        metadata = null
+        metadata = null,
+        script
     ) {
         // TODO: validate unspentOutputs, outputs and metadata
         const { assets, inputs } = this.makeBaseTransferTransaction(unspentOutputs)
-        return Transaction.makeTransaction('TRANSFER', assets, metadata, outputs, inputs, '3.0')
+        return Transaction.makeTransaction('TRANSFER', assets, metadata, outputs, inputs, '3.0', script)
     }
 
     static makeTransferTransactionV2(

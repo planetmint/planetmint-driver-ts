@@ -470,3 +470,131 @@ test('Valid CREATE transaction with zenroom script', async t => {
     const resTx = await conn.postTransaction(txSigned)
     t.truthy(resTx)
 })
+
+test('Invalid CREATE transaction with zenroom script', async t => {
+    const conn = new Connection()
+    const tx = Transaction.makeCreateTransaction(
+        [await assetData()],
+        await metaData,
+        [aliceOutput],
+        [alice.publicKey],
+        {
+            code: `
+                Scenario 'test': Script verifies input
+                Given that I have a 'string dictionary' named 'houses'
+                Then print the string 'ok'
+            `,
+            inputs: {
+                "houses": [
+                    {
+                        "name": "Harry",
+                        "team": "Gryffindor",
+                    },
+                    {
+                        "name": "Draco",
+                        "team": "Slytherin",
+                    },
+                ],
+            },
+            outputs: ["not ok"],
+            state: "dd8bbd234f9869cab4cc0b84aa660e9b5ef0664559b8375804ee8dce75b10576",
+            policies: {},
+        }
+    )
+    const txSigned = Transaction.signTransaction(tx, alice.privateKey)
+
+    await t.throwsAsync(async () => await conn.postTransaction(txSigned), { instanceOf: Error })
+})
+
+test('Valid TRANSFER transaction with zenroom script', async t => {
+    const conn = new Connection()
+    const createTx = Transaction.makeCreateTransaction(
+        [await assetData()],
+        await metaData,
+        [aliceOutput],
+        [alice.publicKey]
+    )
+    const createTxSigned = Transaction.signTransaction(
+        createTx,
+        alice.privateKey
+    )
+
+    await conn.postTransactionCommit(createTxSigned)
+    const transferTx = Transaction.makeTransferTransaction(
+        [{ tx: createTxSigned, output_index: 0 }],
+        [aliceOutput],
+        await metaData,
+        {
+            code: `
+                Scenario 'test': Script verifies input
+                Given that I have a 'string dictionary' named 'houses'
+                Then print the string 'ok'
+            `,
+            inputs: {
+                "houses": [
+                    {
+                        "name": "Harry",
+                        "team": "Gryffindor",
+                    },
+                    {
+                        "name": "Draco",
+                        "team": "Slytherin",
+                    },
+                ],
+            },
+            outputs: ["ok"],
+            state: "dd8bbd234f9869cab4cc0b84aa660e9b5ef0664559b8375804ee8dce75b10576",
+            policies: {},
+        }
+    )
+    const transferTxSigned = Transaction.signTransaction(transferTx, alice.privateKey)
+
+    const resTx = await conn.postTransaction(transferTxSigned)
+    t.truthy(resTx)
+})
+
+test('Invalid TRANSFER transaction with zenroom script', async t => {
+    const conn = new Connection()
+    const createTx = Transaction.makeCreateTransaction(
+        [await assetData()],
+        await metaData,
+        [aliceOutput],
+        [alice.publicKey]
+    )
+    const createTxSigned = Transaction.signTransaction(
+        createTx,
+        alice.privateKey
+    )
+
+    await conn.postTransactionCommit(createTxSigned)
+    const transferTx = Transaction.makeTransferTransaction(
+        [{ tx: createTxSigned, output_index: 0 }],
+        [aliceOutput],
+        await metaData,
+        {
+            code: `
+                Scenario 'test': Script verifies input
+                Given that I have a 'string dictionary' named 'houses'
+                Then print the string 'ok'
+            `,
+            inputs: {
+                "houses": [
+                    {
+                        "name": "Harry",
+                        "team": "Gryffindor",
+                    },
+                    {
+                        "name": "Draco",
+                        "team": "Slytherin",
+                    },
+                ],
+            },
+            outputs: ["not ok"],
+            state: "dd8bbd234f9869cab4cc0b84aa660e9b5ef0664559b8375804ee8dce75b10576",
+            policies: {},
+        }
+    )
+    const transferTxSigned = Transaction.signTransaction(transferTx, alice.privateKey)
+
+    await t.throwsAsync(async () => await conn.postTransaction(transferTxSigned), { instanceOf: Error })
+})
