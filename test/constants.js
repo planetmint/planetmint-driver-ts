@@ -85,3 +85,22 @@ export function delegatedSignTransaction(...keyPairs) {
         return ed25519Fulfillment.serializeUri()
     }
 }
+
+export const zenroomContract = `
+    Scenario 'test': Script verifies input
+    Given that I have a 'string dictionary' named 'houses'
+    Then print the string 'ok'
+`
+
+export const zenroomInputs = {
+    "houses": [
+        {
+            "name": "Harry",
+            "team": "Gryffindor",
+        },
+        {
+            "name": "Draco",
+            "team": "Slytherin",
+        },
+    ],
+}

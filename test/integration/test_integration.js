@@ -15,7 +15,9 @@ import {
     bobOutput,
     assetData,
     metaData,
-    delegatedSignTransaction
+    delegatedSignTransaction,
+    zenroomContract,
+    zenroomInputs
 } from '../constants'
 
 test('Keypair is created', t => {
@@ -443,23 +445,8 @@ test('Valid CREATE transaction with zenroom script', async t => {
         [aliceOutput],
         [alice.publicKey],
         {
-            code: `
-                Scenario 'test': Script verifies input
-                Given that I have a 'string dictionary' named 'houses'
-                Then print the string 'ok'
-            `,
-            inputs: {
-                "houses": [
-                    {
-                        "name": "Harry",
-                        "team": "Gryffindor",
-                    },
-                    {
-                        "name": "Draco",
-                        "team": "Slytherin",
-                    },
-                ],
-            },
+            code: zenroomContract,
+            inputs: zenroomInputs,
             outputs: ["ok"],
             state: "dd8bbd234f9869cab4cc0b84aa660e9b5ef0664559b8375804ee8dce75b10576",
             policies: {},
@@ -479,23 +466,8 @@ test('Invalid CREATE transaction with zenroom script', async t => {
         [aliceOutput],
         [alice.publicKey],
         {
-            code: `
-                Scenario 'test': Script verifies input
-                Given that I have a 'string dictionary' named 'houses'
-                Then print the string 'ok'
-            `,
-            inputs: {
-                "houses": [
-                    {
-                        "name": "Harry",
-                        "team": "Gryffindor",
-                    },
-                    {
-                        "name": "Draco",
-                        "team": "Slytherin",
-                    },
-                ],
-            },
+            code: zenroomContract,
+            inputs: zenroomInputs,
             outputs: ["not ok"],
             state: "dd8bbd234f9869cab4cc0b84aa660e9b5ef0664559b8375804ee8dce75b10576",
             policies: {},
@@ -525,23 +497,8 @@ test('Valid TRANSFER transaction with zenroom script', async t => {
         [aliceOutput],
         await metaData,
         {
-            code: `
-                Scenario 'test': Script verifies input
-                Given that I have a 'string dictionary' named 'houses'
-                Then print the string 'ok'
-            `,
-            inputs: {
-                "houses": [
-                    {
-                        "name": "Harry",
-                        "team": "Gryffindor",
-                    },
-                    {
-                        "name": "Draco",
-                        "team": "Slytherin",
-                    },
-                ],
-            },
+            code: zenroomContract,
+            inputs: zenroomInputs,
             outputs: ["ok"],
             state: "dd8bbd234f9869cab4cc0b84aa660e9b5ef0664559b8375804ee8dce75b10576",
             policies: {},
@@ -572,23 +529,8 @@ test('Invalid TRANSFER transaction with zenroom script', async t => {
         [aliceOutput],
         await metaData,
         {
-            code: `
-                Scenario 'test': Script verifies input
-                Given that I have a 'string dictionary' named 'houses'
-                Then print the string 'ok'
-            `,
-            inputs: {
-                "houses": [
-                    {
-                        "name": "Harry",
-                        "team": "Gryffindor",
-                    },
-                    {
-                        "name": "Draco",
-                        "team": "Slytherin",
-                    },
-                ],
-            },
+            code: zenroomContract,
+            inputs: zenroomInputs,
             outputs: ["not ok"],
             state: "dd8bbd234f9869cab4cc0b84aa660e9b5ef0664559b8375804ee8dce75b10576",
             policies: {},
