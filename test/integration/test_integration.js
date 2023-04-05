@@ -447,8 +447,8 @@ test('Valid CREATE transaction with zenroom script', async t => {
         {
             code: zenroomContract,
             inputs: zenroomInputs,
-            outputs: ["ok"],
-            state: "dd8bbd234f9869cab4cc0b84aa660e9b5ef0664559b8375804ee8dce75b10576",
+            outputs: ['ok'],
+            state: 'dd8bbd234f9869cab4cc0b84aa660e9b5ef0664559b8375804ee8dce75b10576',
             policies: {},
         }
     )
@@ -468,14 +468,14 @@ test('Invalid CREATE transaction with zenroom script', async t => {
         {
             code: zenroomContract,
             inputs: zenroomInputs,
-            outputs: ["not ok"],
-            state: "dd8bbd234f9869cab4cc0b84aa660e9b5ef0664559b8375804ee8dce75b10576",
+            outputs: ['not ok'],
+            state: 'dd8bbd234f9869cab4cc0b84aa660e9b5ef0664559b8375804ee8dce75b10576',
             policies: {},
         }
     )
     const txSigned = Transaction.signTransaction(tx, alice.privateKey)
 
-    await t.throwsAsync(async () => await conn.postTransaction(txSigned), { instanceOf: Error })
+    await t.throwsAsync(async () => conn.postTransaction(txSigned), { instanceOf: Error })
 })
 
 test('Valid TRANSFER transaction with zenroom script', async t => {
@@ -499,8 +499,8 @@ test('Valid TRANSFER transaction with zenroom script', async t => {
         {
             code: zenroomContract,
             inputs: zenroomInputs,
-            outputs: ["ok"],
-            state: "dd8bbd234f9869cab4cc0b84aa660e9b5ef0664559b8375804ee8dce75b10576",
+            outputs: ['ok'],
+            state: 'dd8bbd234f9869cab4cc0b84aa660e9b5ef0664559b8375804ee8dce75b10576',
             policies: {},
         }
     )
@@ -531,12 +531,12 @@ test('Invalid TRANSFER transaction with zenroom script', async t => {
         {
             code: zenroomContract,
             inputs: zenroomInputs,
-            outputs: ["not ok"],
-            state: "dd8bbd234f9869cab4cc0b84aa660e9b5ef0664559b8375804ee8dce75b10576",
+            outputs: ['not ok'],
+            state: 'dd8bbd234f9869cab4cc0b84aa660e9b5ef0664559b8375804ee8dce75b10576',
             policies: {},
         }
     )
     const transferTxSigned = Transaction.signTransaction(transferTx, alice.privateKey)
 
-    await t.throwsAsync(async () => await conn.postTransaction(transferTxSigned), { instanceOf: Error })
+    await t.throwsAsync(async () => conn.postTransaction(transferTxSigned), { instanceOf: Error })
 })

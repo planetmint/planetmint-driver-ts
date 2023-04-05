@@ -19,7 +19,7 @@ export const API_PATH = 'http://localhost:9984/api/v1/'
 
 // transaction schema v2
 // NOTE: It's safer to cast `Math.random()` to a string, to avoid differences
-// in "float interpretation" between languages (e.g. JavaScript and Python)
+// in 'float interpretation' between languages (e.g. JavaScript and Python)
 export function assetV2() { return { message: `${Math.random()}` } }
 export const metaDataV2 = { message: 'metaDataMessage' }
 
@@ -93,14 +93,14 @@ export const zenroomContract = `
 `
 
 export const zenroomInputs = {
-    "houses": [
+    'houses': [
         {
-            "name": "Harry",
-            "team": "Gryffindor",
+            'name': 'Harry',
+            'team': 'Gryffindor',
         },
         {
-            "name": "Draco",
-            "team": "Slytherin",
+            'name': 'Draco',
+            'team': 'Slytherin',
         },
     ],
 }

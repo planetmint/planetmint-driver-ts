@@ -235,7 +235,7 @@ export default class Transaction {
         unspentOutputs,
         outputs,
         metadata = null,
-        script
+        script = null
     ) {
         // TODO: validate unspentOutputs, outputs and metadata
         const { assets, inputs } = this.makeBaseTransferTransaction(unspentOutputs)
