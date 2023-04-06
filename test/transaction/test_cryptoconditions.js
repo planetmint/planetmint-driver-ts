@@ -72,7 +72,7 @@ test('Fulfillment correctly formed', t => {
         [],
         null,
         [Transaction.makeOutput(Transaction.makeEd25519Condition(alice.publicKey))],
-        alice.publicKey
+        [alice.publicKey]
     )
     // Sign in order to get the tx id, needed for the unique fulfillment in the transfer transaction
     const signCreateTransaction = Transaction.signTransaction(txCreate, alice.privateKey)
@@ -106,7 +106,7 @@ test('Delegated signature is correct', t => {
         [],
         null,
         [Transaction.makeOutput(Transaction.makeEd25519Condition(alice.publicKey))],
-        alice.publicKey
+        [alice.publicKey]
     )
 
     const signCreateTransaction = Transaction.signTransaction(txCreate, alice.privateKey)
@@ -124,7 +124,7 @@ test('Delegated async signature is correct', async t => {
         [],
         null,
         [Transaction.makeOutput(Transaction.makeEd25519Condition(alice.publicKey))],
-        alice.publicKey
+        [alice.publicKey]
     )
 
     const signCreateTransaction = Transaction.signTransaction(txCreate, alice.privateKey)

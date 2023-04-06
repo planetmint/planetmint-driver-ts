@@ -19,7 +19,7 @@ export const API_PATH = 'http://localhost:9984/api/v1/'
 
 // transaction schema v2
 // NOTE: It's safer to cast `Math.random()` to a string, to avoid differences
-// in "float interpretation" between languages (e.g. JavaScript and Python)
+// in 'float interpretation' between languages (e.g. JavaScript and Python)
 export function assetV2() { return { message: `${Math.random()}` } }
 export const metaDataV2 = { message: 'metaDataMessage' }
 
@@ -42,7 +42,7 @@ export const createTx = Transaction.makeCreateTransaction(
     [assetCID],
     metaDataCID,
     [aliceOutput],
-    alice.publicKey
+    [alice.publicKey]
 )
 export const transferTx = Transaction.makeTransferTransaction(
     [{ tx: createTx, output_index: 0 }],
@@ -84,4 +84,23 @@ export function delegatedSignTransaction(...keyPairs) {
         })
         return ed25519Fulfillment.serializeUri()
     }
+}
+
+export const zenroomContract = `
+    Scenario 'test': Script verifies input
+    Given that I have a 'string dictionary' named 'houses'
+    Then print the string 'ok'
+`
+
+export const zenroomInputs = {
+    'houses': [
+        {
+            'name': 'Harry',
+            'team': 'Gryffindor',
+        },
+        {
+            'name': 'Draco',
+            'team': 'Slytherin',
+        },
+    ],
 }

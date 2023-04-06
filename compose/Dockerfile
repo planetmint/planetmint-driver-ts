@@ -12,6 +12,7 @@ RUN apt-get update \
 
 ARG backend
 ARG abci_status
+ARG branch=main
 
 # When developing with Python in a docker container, we are using PYTHONBUFFERED
 # to force stdin, stdout and stderr to be totally unbuffered and to capture logs/outputs
@@ -32,6 +33,7 @@ ENV PLANETMINT_CI_ABCI ${abci_status}
 
 RUN git clone https://github.com/planetmint/planetmint.git
 WORKDIR /planetmint
+RUN git checkout ${branch}
 RUN pip install -e .[dev]
 
 RUN planetmint -y configure

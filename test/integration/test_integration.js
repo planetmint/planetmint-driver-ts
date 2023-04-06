@@ -15,7 +15,9 @@ import {
     bobOutput,
     assetData,
     metaData,
-    delegatedSignTransaction
+    delegatedSignTransaction,
+    zenroomContract,
+    zenroomInputs
 } from '../constants'
 
 test('Keypair is created', t => {
@@ -31,7 +33,7 @@ test('Valid CREATE transaction with default node', async t => {
         [await assetData()],
         await metaData,
         [aliceOutput],
-        alice.publicKey
+        [alice.publicKey]
     )
     const txSigned = Transaction.signTransaction(tx, alice.privateKey)
 
@@ -46,7 +48,7 @@ test('Valid CREATE transaction using async', async t => {
         [await assetData()],
         await metaData,
         [aliceOutput],
-        alice.publicKey
+        [alice.publicKey]
     )
     const txSigned = Transaction.signTransaction(tx, alice.privateKey)
 
@@ -61,7 +63,7 @@ test('Valid CREATE transaction using sync', async t => {
         [await assetData()],
         await metaData,
         [aliceOutput],
-        alice.publicKey
+        [alice.publicKey]
     )
     const txSigned = Transaction.signTransaction(tx, alice.privateKey)
     const resTx = await conn.postTransactionSync(txSigned)
@@ -74,7 +76,7 @@ test('Valid TRANSFER transaction with single Ed25519 input', async t => {
         [await assetData()],
         await metaData,
         [aliceOutput],
-        alice.publicKey
+        [alice.publicKey]
     )
     const createTxSigned = Transaction.signTransaction(
         createTx,
@@ -101,7 +103,7 @@ test('Valid TRANSFER transaction with multiple Ed25519 inputs', async t => {
         [await assetData()],
         await metaData,
         [aliceOutput, bobOutput],
-        alice.publicKey
+        [alice.publicKey]
     )
     const createTxSigned = Transaction.signTransaction(
         createTx,
@@ -138,7 +140,7 @@ test('Valid TRANSFER transaction with multiple Ed25519 inputs from different tra
         [await assetData()],
         await metaData,
         [aliceOutput, bobOutput],
-        alice.publicKey
+        [alice.publicKey]
     )
     const createTxSigned = Transaction.signTransaction(
         createTx,
@@ -189,7 +191,7 @@ test('Valid CREATE transaction using delegateSign with default node', async t =>
         [await assetData()],
         await metaData,
         [aliceOutput],
-        alice.publicKey
+        [alice.publicKey]
     )
 
     const txSigned = Transaction.delegateSignTransaction(
@@ -207,7 +209,7 @@ test('Valid TRANSFER transaction with multiple Ed25519 inputs using delegateSign
         [await assetData()],
         await metaData,
         [aliceOutput, bobOutput],
-        alice.publicKey
+        [alice.publicKey]
     )
     const createTxSigned = Transaction.signTransaction(
         createTx,
@@ -243,7 +245,7 @@ test('Search for spent and unspent outputs of a given public key', async t => {
         [await assetData()],
         await metaData,
         [carolOutput, carolOutput],
-        carol.publicKey
+        [carol.publicKey]
     )
     const createTxSigned = Transaction.signTransaction(
         createTx,
@@ -282,7 +284,7 @@ test('Search for unspent outputs for a given public key', async t => {
         [await assetData()],
         await metaData,
         [carolOutput, carolOutput, carolOutput],
-        carol.publicKey
+        [carol.publicKey]
     )
     const createTxSigned = Transaction.signTransaction(
         createTx,
@@ -321,7 +323,7 @@ test('Search for spent outputs for a given public key', async t => {
         [await assetData()],
         await metaData,
         [carolOutput, carolOutput, carolOutput],
-        carol.publicKey
+        [carol.publicKey]
     )
     const createTxSigned = Transaction.signTransaction(
         createTx,
@@ -355,7 +357,7 @@ test('Search for an asset', async t => {
         [assetCID],
         await metaData,
         [aliceOutput],
-        alice.publicKey
+        [alice.publicKey]
     )
     const createTxSigned = Transaction.signTransaction(
         createTx,
@@ -376,7 +378,7 @@ test.skip('Search for metadata', async t => {
         [await assetData()],
         metaDataCID,
         [aliceOutput],
-        alice.publicKey
+        [alice.publicKey]
     )
     const createTxSigned = Transaction.signTransaction(
         createTx,
@@ -395,7 +397,7 @@ test('Search blocks containing a transaction', async t => {
         [await assetData()],
         await metaData,
         [aliceOutput],
-        alice.publicKey
+        [alice.publicKey]
     )
     const createTxSigned = Transaction.signTransaction(
         createTx,
@@ -417,7 +419,7 @@ test('Search transaction containing an asset', async t => {
         [await assetData()],
         await metaData,
         [aliceOutput],
-        alice.publicKey
+        [alice.publicKey]
     )
     const createTxSigned = Transaction.signTransaction(
         createTx,
@@ -433,4 +435,108 @@ test('Content-Type cannot be set', t => {
     t.throws(() => new Connection(API_PATH, { 'Content-Type': 'application/json' }), {
         instanceOf: Error
     })
+})
+
+test('Valid CREATE transaction with zenroom script', async t => {
+    const conn = new Connection()
+    const tx = Transaction.makeCreateTransaction(
+        [await assetData()],
+        await metaData,
+        [aliceOutput],
+        [alice.publicKey],
+        {
+            code: zenroomContract,
+            inputs: zenroomInputs,
+            outputs: ['ok'],
+            state: 'dd8bbd234f9869cab4cc0b84aa660e9b5ef0664559b8375804ee8dce75b10576',
+            policies: {},
+        }
+    )
+    const txSigned = Transaction.signTransaction(tx, alice.privateKey)
+
+    const resTx = await conn.postTransaction(txSigned)
+    t.truthy(resTx)
+})
+
+test('Invalid CREATE transaction with zenroom script', async t => {
+    const conn = new Connection()
+    const tx = Transaction.makeCreateTransaction(
+        [await assetData()],
+        await metaData,
+        [aliceOutput],
+        [alice.publicKey],
+        {
+            code: zenroomContract,
+            inputs: zenroomInputs,
+            outputs: ['not ok'],
+            state: 'dd8bbd234f9869cab4cc0b84aa660e9b5ef0664559b8375804ee8dce75b10576',
+            policies: {},
+        }
+    )
+    const txSigned = Transaction.signTransaction(tx, alice.privateKey)
+
+    await t.throwsAsync(async () => conn.postTransaction(txSigned), { instanceOf: Error })
+})
+
+test('Valid TRANSFER transaction with zenroom script', async t => {
+    const conn = new Connection()
+    const createTx = Transaction.makeCreateTransaction(
+        [await assetData()],
+        await metaData,
+        [aliceOutput],
+        [alice.publicKey]
+    )
+    const createTxSigned = Transaction.signTransaction(
+        createTx,
+        alice.privateKey
+    )
+
+    await conn.postTransactionCommit(createTxSigned)
+    const transferTx = Transaction.makeTransferTransaction(
+        [{ tx: createTxSigned, output_index: 0 }],
+        [aliceOutput],
+        await metaData,
+        {
+            code: zenroomContract,
+            inputs: zenroomInputs,
+            outputs: ['ok'],
+            state: 'dd8bbd234f9869cab4cc0b84aa660e9b5ef0664559b8375804ee8dce75b10576',
+            policies: {},
+        }
+    )
+    const transferTxSigned = Transaction.signTransaction(transferTx, alice.privateKey)
+
+    const resTx = await conn.postTransaction(transferTxSigned)
+    t.truthy(resTx)
+})
+
+test('Invalid TRANSFER transaction with zenroom script', async t => {
+    const conn = new Connection()
+    const createTx = Transaction.makeCreateTransaction(
+        [await assetData()],
+        await metaData,
+        [aliceOutput],
+        [alice.publicKey]
+    )
+    const createTxSigned = Transaction.signTransaction(
+        createTx,
+        alice.privateKey
+    )
+
+    await conn.postTransactionCommit(createTxSigned)
+    const transferTx = Transaction.makeTransferTransaction(
+        [{ tx: createTxSigned, output_index: 0 }],
+        [aliceOutput],
+        await metaData,
+        {
+            code: zenroomContract,
+            inputs: zenroomInputs,
+            outputs: ['not ok'],
+            state: 'dd8bbd234f9869cab4cc0b84aa660e9b5ef0664559b8375804ee8dce75b10576',
+            policies: {},
+        }
+    )
+    const transferTxSigned = Transaction.signTransaction(transferTx, alice.privateKey)
+
+    await t.throwsAsync(async () => conn.postTransaction(transferTxSigned), { instanceOf: Error })
 })
