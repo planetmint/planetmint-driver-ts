@@ -34,6 +34,5 @@ ENV PLANETMINT_CI_ABCI ${abci_status}
 RUN git clone https://github.com/planetmint/planetmint.git
 WORKDIR /planetmint
 RUN git checkout ${branch}
-RUN pip install -e .[dev]
-
-RUN planetmint -y configure
+RUN pip install poetry
+RUN poetry install --with dev

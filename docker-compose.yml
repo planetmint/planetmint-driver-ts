@@ -56,7 +56,7 @@ services:
       interval: 3s
       timeout: 5s
       retries: 5
-    command: 'planetmint -l DEBUG start'
+    command: 'poetry run planetmint -l DEBUG start'
     restart: always
 
   tendermint:
