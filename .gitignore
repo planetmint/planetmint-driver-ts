@@ -16,11 +16,9 @@
 
 node_modules
 dist
-package-lock.json
 coverage
 coverage.lcov
 .nyc_output
-yarn.lock
 docs/build/
 docs/_build/
 docs/build/
