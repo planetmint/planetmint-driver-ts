@@ -40,6 +40,7 @@
   },
   "devDependencies": {
     "@ava/babel": "^2.0.0",
+    "@ava/typescript": "^4.0.0",
     "@babel/cli": "^7.17.0",
     "@babel/core": "^7.17.2",
     "@babel/eslint-parser": "^7.17.0",
@@ -81,6 +82,7 @@
     "crypto-conditions": "2.2.1",
     "decamelize": "^5.0.0",
     "es6-promise": "^4.2.8",
+    "eslint-import-resolver-typescript": "^3.5.5",
     "fetch-ponyfill": "^7.1.0",
     "js-sha3": "^0.8.0",
     "json-stable-stringify": "^1.0.1",

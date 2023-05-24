@@ -1,5 +1,9 @@
 module.exports = {
-    extends: ['eslint:recommended', 'airbnb-base', 'plugin:import/recommended'],
+    extends: ['eslint:recommended',
+        'airbnb-base', 
+        'plugin:import/recommended',
+        'plugin:import/recommended',
+        'plugin:import/typescript'],
     parser: '@babel/eslint-parser',
     parserOptions: { requireConfigFile: false },
     env: {
@@ -8,12 +12,19 @@ module.exports = {
     },
     settings: {
         'import/ignore': ['node_modules', '.(scss|css)$', '.(jpe?g|png|gif|svg)'],
+        'import/resolver': {
+            'typescript': {},
+            'node': {
+                'extensions': ['.ts', '.mjs'],
+                'paths': ['*']
+            }
+        }
     },
     rules: {
-    /**
-     * Possible Errors
-     * http://eslint.org/docs/rus/#possible-errors
-     */
+        /**
+         * Possible Errors
+         * http://eslint.org/docs/rus/#possible-errors
+         */
 
         // Allow dangling commas for multiline arrays and objects
         // http://eslint.org/docs/rules/comma-dangle
